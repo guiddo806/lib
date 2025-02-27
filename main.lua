@@ -3011,9 +3011,9 @@ function Library:CreateWindow(...)
 
     local WindowLabel = Library:CreateLabel({
         Position = UDim2.new(0, 0, 0, 0),
-        Size = UDim2.new(1.5, 0, 0, 29),
-        Text = Config.Title or 'Funa UI';
-        TextXAlignment = Enum.TextXAlignment.Right,
+        Size = UDim2.new(1, 0, 0, 29), 
+        Text = Config.Title or 'Funa UI',
+        TextXAlignment = Enum.TextXAlignment.Center, 
         ZIndex = 2;
         Parent = Inner;
     });
