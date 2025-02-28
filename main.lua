@@ -3211,6 +3211,25 @@ function Library:CreateWindow(...)
                 Parent = BoxOuter;
             });
 
+            local BoxInner = Library:Create('Frame', {
+                BackgroundColor3 = Library.BackgroundColor;
+                BorderColor3 = Color3.new(0, 0, 0);
+                Size = UDim2.new(1, -2, 1, -2);
+                Position = UDim2.new(0, 1, 0, 1);
+                ZIndex = 4;
+                Parent = BoxOuter;
+            });
+            
+            local GroupboxBackgroundImage = Library:Create('ImageLabel', {
+                BackgroundTransparency = 1;
+                Image = 'rbxassetid://12221008496';
+                Size = UDim2.new(1, 0, 1, 0);
+                Position = UDim2.new(0, 0, 0, 0);
+                ZIndex = 3; 
+                ScaleType = Enum.ScaleType.Stretch; 
+                Parent = BoxInner;
+            });
+
             Library:AddToRegistry(BoxInner, {
                 BackgroundColor3 = 'BackgroundColor';
             });
