@@ -3026,7 +3026,7 @@ function Library:CreateWindow(...)
     BackgroundImage.AnchorPoint = Vector2.new(0.5, 0.5)
     BackgroundImage.BackgroundTransparency = 1
     BackgroundImage.BorderSizePixel = 0
-    BackgroundImage.Image = 'rbxassetid://' 
+    BackgroundImage.Image = 'rbxassetid://4878343793' 
     BackgroundImage.ImageColor3 = Color3.fromRGB(255, 255, 255) 
     BackgroundImage.Position = UDim2.fromScale(0.5, 0.5)
     BackgroundImage.ScaleType = Enum.ScaleType.Slice
