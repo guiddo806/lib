@@ -3022,15 +3022,19 @@ function Library:CreateWindow(...)
         Parent = MainSectionOuter;
     });
 
-    local BackgroundImage = Library:Create('ImageLabel', {
-        BackgroundTransparency = 1;
-        Image = 'rbxassetid://4878343793'; 
-        Size = UDim2.new(1, 0, 1, 0);
-        Position = UDim2.new(0, 0, 0, 0);
-        ZIndex = 1;
-        ScaleType = Enum.ScaleType.Stretch;
-        Parent = MainSectionInner;
-    });
+    local BackgroundImage = Instance.new('ImageLabel')
+    BackgroundImage.AnchorPoint = Vector2.new(0.5, 0.5)
+    BackgroundImage.BackgroundTransparency = 1
+    BackgroundImage.BorderSizePixel = 0
+    BackgroundImage.Image = 'rbxassetid://' 
+    BackgroundImage.ImageColor3 = Color3.fromRGB(255, 255, 255) 
+    BackgroundImage.Position = UDim2.fromScale(0.5, 0.5)
+    BackgroundImage.ScaleType = Enum.ScaleType.Slice
+    BackgroundImage.Size = UDim2.new(1, 0, 1, 0) 
+    BackgroundImage.SliceCenter = Rect.new(40, 40, 260, 260) 
+    BackgroundImage.SliceScale = 1
+    BackgroundImage.ZIndex = 1 
+    BackgroundImage.Parent = MainSectionInner
 
     Library:AddToRegistry(MainSectionInner, {
         BackgroundColor3 = 'BackgroundColor';
@@ -3219,16 +3223,6 @@ function Library:CreateWindow(...)
                 Position = UDim2.new(0, 1, 0, 1);
                 ZIndex = 4;
                 Parent = BoxOuter;
-            });
-
-            local GroupboxBackgroundImage = Library:Create('ImageLabel', {
-                BackgroundTransparency = 1;
-                Image = 'rbxassetid://12221008496'; 
-                Size = UDim2.new(1, 0, 1, 0);
-                Position = UDim2.new(0, 0, 0, 0);
-                ZIndex = 3; 
-                ScaleType = Enum.ScaleType.Stretch; 
-                Parent = BoxInner;
             });
             
             Library:AddToRegistry(BoxInner, {
