@@ -423,9 +423,10 @@ do
             BackgroundColor3 = ColorPicker.Value;
             BorderColor3 = Library:GetDarkerColor(ColorPicker.Value);
             BorderMode = Enum.BorderMode.Inset;
-            Size = UDim2.new(0, 28, 0, 14);
+            Size = UDim2.new(0, 28, 0, 14), 
+            Position = UDim2.new(0, 0, 0, 0), 
             ZIndex = 6;
-            Parent = ToggleLabel;
+            Parent = self.Container; 
         });
 
         local CheckerFrame = Library:Create('ImageLabel', {
@@ -1006,9 +1007,10 @@ do
         local PickOuter = Library:Create('Frame', {
             BackgroundColor3 = Color3.new(0, 0, 0);
             BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(0, 28, 0, 15);
+            Size = UDim2.new(0, 80, 0, 15), 
+            Position = UDim2.new(0, 0, 0, 0), 
             ZIndex = 6;
-            Parent = ToggleLabel;
+            Parent = self.Container; 
         });
 
         local PickInner = Library:Create('Frame', {
