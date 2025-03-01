@@ -419,13 +419,15 @@ do
 
         ColorPicker:SetHSVFromRGB(ColorPicker.Value);
 
+        local newWidth = 28 * 1.45; -- Увеличенная ширина с 28 до ~40.6 (округляем до 40)
         local DisplayFrame = Library:Create('Frame', {
             BackgroundColor3 = ColorPicker.Value;
             BorderColor3 = Library:GetDarkerColor(ColorPicker.Value);
             BorderMode = Enum.BorderMode.Inset;
-            Size = UDim2.new(0, 28, 0, 14);
+            Size = UDim2.new(0, math.floor(newWidth), 0, 20), -- Увеличенная высота для пропорции
+            Position = UDim2.new(0, 0, 0, 0), -- Начало с левого края, можно настроить правый край позже
             ZIndex = 6;
-            Parent = ToggleLabel;
+            Parent = self.Container;
         });
 
         local CheckerFrame = Library:Create('ImageLabel', {
@@ -1003,12 +1005,14 @@ do
             Info.Mode = 'Toggle'
         end
 
+        local newWidth = 28 * 1.45; -- Увеличенная ширина с 28 до ~40.6 (округляем до 40)
         local PickOuter = Library:Create('Frame', {
             BackgroundColor3 = Color3.new(0, 0, 0);
             BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(0, 28, 0, 15);
+            Size = UDim2.new(0, math.floor(newWidth), 0, 20), -- Увеличенная высота для пропорции
+            Position = UDim2.new(0, 0, 0, 0), -- Начало с левого края, можно настроить правый край позже
             ZIndex = 6;
-            Parent = ToggleLabel;
+            Parent = self.Container;
         });
 
         local PickInner = Library:Create('Frame', {
