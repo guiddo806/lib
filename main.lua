@@ -1003,14 +1003,12 @@ do
             Info.Mode = 'Toggle'
         end
 
-        local newWidth = 28 * 1.45; -- Увеличенная ширина с 28 до ~40.6 (округляем до 40)
         local PickOuter = Library:Create('Frame', {
             BackgroundColor3 = Color3.new(0, 0, 0);
             BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(0, math.floor(newWidth), 0, 20), -- Увеличенная высота для пропорции
-            Position = UDim2.new(0, 0, 0, 0), -- Начало с левого края, можно настроить правый край позже
+            Size = UDim2.new(0, 28, 0, 15);
             ZIndex = 6;
-            Parent = self.Container;
+            Parent = ToggleLabel;
         });
 
         local PickInner = Library:Create('Frame', {
