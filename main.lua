@@ -2961,7 +2961,7 @@ function Library:CreateWindow(...)
         shadow.BackgroundTransparency = 1
         shadow.BorderSizePixel = 0 
         shadow.Image = 'rbxassetid://7331400934'
-        shadow.ImageColor3 = AccentColor
+        shadow.ImageColor3 = Color3.fromRGB(108, 96, 125)
         shadow.Name = '#shadow'
         shadow.Position = UDim2.fromScale(0.5, 0.5)
         shadow.ScaleType = 'Slice'
