@@ -37,7 +37,7 @@ local Library = {
     RiskColor = Color3.fromRGB(255, 50, 50),
 
     Black = Color3.new(0, 0, 0);
-    Font = FontFace.new("rbxassetid://12187371840"),
+    Font = Enum.Font.Highway,
 
     OpenedFrames = {};
     DependencyBoxes = {};
