@@ -3067,8 +3067,8 @@ function Library:CreateWindow(...)
 
     function Window:AddTab(Name)
         local Tab = {
-            Groupboxes = {};
-            Tabboxes = {};
+            Groupboxes = {},
+            Tabboxes = {},
         };
     
         -- Создаём кнопку вкладки
@@ -3088,6 +3088,8 @@ function Library:CreateWindow(...)
             Position = UDim2.new(0, 0, 0, 0),
             Size = UDim2.new(1, 0, 1, -1),
             Text = Name,
+            TextWrapped = true, -- Включаем перенос текста
+            TextXAlignment = Enum.TextXAlignment.Center, -- Центрируем текст
             ZIndex = 2,
             Parent = TabButton,
         });
@@ -3106,22 +3108,49 @@ function Library:CreateWindow(...)
             BackgroundColor3 = 'MainColor',
         });
     
-        -- Функция для обновления размеров вкладок
+        -- Функция для обновления размеров вкладок с учётом абсолютных размеров
         local function UpdateTabButtonSizes()
             local tabCount = #TabArea:GetChildren() - 1 -- Исключаем UIListLayout
-            if tabCount > 0 then
-                local tabWidth = 1 / tabCount -- Доля ширины для каждой вкладки
-                for _, button in next, TabArea:GetChildren() do
-                    if not button:IsA('UIListLayout') then
-                        button.Size = UDim2.new(tabWidth, 0, 1, 0) -- Устанавливаем ширину как долю от общей ширины
-                    end
+            if tabCount <= 0 then return end
+    
+            -- Получаем абсолютную ширину TabArea
+            local tabAreaWidth = TabArea.AbsoluteSize.X
+            if tabAreaWidth <= 0 then return end -- Защита от деления на ноль
+    
+            -- Получаем Padding из TabListLayout
+            local padding = TabListLayout.Padding.Offset
+            -- Общее пространство, занятое отступами
+            local totalPadding = padding * math.max(0, tabCount - 1)
+            -- Доступная ширина для вкладок
+            local availableWidth = tabAreaWidth - totalPadding
+    
+            -- Минимальная ширина вкладки (например, 50 пикселей для читаемости текста)
+            local minTabWidth = 50
+            -- Максимальная ширина вкладки (чтобы не превышать TabArea)
+            local maxTabWidth = availableWidth / tabCount
+    
+            -- Устанавливаем ширину каждой вкладки
+            local tabWidth = math.max(minTabWidth, maxTabWidth)
+            if tabWidth * tabCount + totalPadding > tabAreaWidth then
+                tabWidth = (availableWidth) / tabCount -- Корректируем, если превышаем
+            end
+    
+            for _, button in next, TabArea:GetChildren() do
+                if not button:IsA('UIListLayout') then
+                    button.Size = UDim2.new(0, tabWidth, 1, 0) -- Устанавливаем абсолютную ширину
                 end
             end
         end
     
         -- Подключаем обновление размеров при изменении содержимого
         TabListLayout:GetPropertyChangedSignal('AbsoluteContentSize'):Connect(UpdateTabButtonSizes)
-        UpdateTabButtonSizes() -- Вызываем сразу, чтобы установить начальные размеры
+        -- Обновляем размеры при изменении размера TabArea
+        TabArea:GetPropertyChangedSignal('AbsoluteSize'):Connect(UpdateTabButtonSizes)
+        -- Инициализируем размеры после создания
+        coroutine.wrap(function()
+            wait() -- Даём время на рендеринг
+            UpdateTabButtonSizes()
+        end)()
     
         local TabFrame = Library:Create('Frame', {
             Name = 'TabFrame',
@@ -3479,7 +3508,7 @@ function Library:CreateWindow(...)
                 Tab:AddBlank(3);
                 Tab:Resize();
     
-                -- Show first tab (number is 2 cus of the UIListLayout that also sits in that instance)
+                -- Show first tab
                 if #TabboxButtons:GetChildren() == 2 then
                     Tab:Show();
                 end;
@@ -3506,7 +3535,7 @@ function Library:CreateWindow(...)
             end;
         end);
     
-        -- This was the first tab added, so we show it by default.
+        -- Показываем первую вкладку по умолчанию
         if #TabContainer:GetChildren() == 1 then
             Tab:ShowTab();
         end;
