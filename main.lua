@@ -2960,8 +2960,8 @@ function Library:CreateWindow(...)
         shadow.AnchorPoint = Vector2.new(0.5, 0.5)
         shadow.BackgroundTransparency = 1
         shadow.BorderSizePixel = 0 
-        shadow.Image = 'rbxassetid://7331400934'
-        shadow.ImageColor3 = Color3.fromRGB(108, 96, 125)
+        shadow.Image = 'rbxassetid://7331400934' 
+        shadow.ImageColor3 = Library.AccentColor 
         shadow.Name = '#shadow'
         shadow.Position = UDim2.fromScale(0.5, 0.5)
         shadow.ScaleType = 'Slice'
@@ -2970,6 +2970,10 @@ function Library:CreateWindow(...)
         shadow.SliceScale = 1
         shadow.ZIndex = 1 
         shadow.Parent = Outer
+    
+        Library:AddToRegistry(shadow, {
+            ImageColor3 = 'AccentColor'
+        })
     end
 
     Library:MakeDraggable(Outer, 25);
@@ -3304,7 +3308,6 @@ function Library:CreateWindow(...)
             local BoxInner = Library:Create('Frame', {
                 BackgroundColor3 = Library.BackgroundColor;
                 BorderColor3 = Color3.new(0, 0, 0);
-                -- BorderMode = Enum.BorderMode.Inset;
                 Size = UDim2.new(1, -2, 1, -2);
                 Position = UDim2.new(0, 1, 0, 1);
                 ZIndex = 4;
