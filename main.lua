@@ -3108,7 +3108,7 @@ function Library:CreateWindow(...)
             BackgroundColor3 = 'MainColor',
         });
     
-        -- Функция для обновления размеров вкладок с учётом абсолютных размеров
+        -- Функция для обновления размеров вкладок
         local function UpdateTabButtonSizes()
             local tabCount = #TabArea:GetChildren() - 1 -- Исключаем UIListLayout
             if tabCount <= 0 then return end
@@ -3117,27 +3117,44 @@ function Library:CreateWindow(...)
             local tabAreaWidth = TabArea.AbsoluteSize.X
             if tabAreaWidth <= 0 then return end -- Защита от деления на ноль
     
-            -- Получаем Padding из TabListLayout
+            -- Получаем Padding из TabListLayout (в вашем случае 0)
             local padding = TabListLayout.Padding.Offset
             -- Общее пространство, занятое отступами
             local totalPadding = padding * math.max(0, tabCount - 1)
             -- Доступная ширина для вкладок
             local availableWidth = tabAreaWidth - totalPadding
     
-            -- Минимальная ширина вкладки (например, 50 пикселей для читаемости текста)
+            -- Минимальная ширина вкладки (для читаемости текста)
             local minTabWidth = 50
-            -- Максимальная ширина вкладки (чтобы не превышать TabArea)
-            local maxTabWidth = availableWidth / tabCount
+            -- Рассчитываем ширину каждой вкладки
+            local tabWidth = math.max(minTabWidth, availableWidth / tabCount)
     
-            -- Устанавливаем ширину каждой вкладки
-            local tabWidth = math.max(minTabWidth, maxTabWidth)
-            if tabWidth * tabCount + totalPadding > tabAreaWidth then
-                tabWidth = (availableWidth) / tabCount -- Корректируем, если превышаем
+            -- Корректируем ширину, чтобы суммарная ширина вкладок идеально совпадала с tabAreaWidth
+            local totalWidthWithTabs = tabWidth * tabCount + totalPadding
+            if totalWidthWithTabs ~= tabAreaWidth then
+                -- Перераспределяем ширину, чтобы устранить зазор
+                tabWidth = (availableWidth) / tabCount
             end
     
+            -- Устанавливаем размеры вкладок
             for _, button in next, TabArea:GetChildren() do
                 if not button:IsA('UIListLayout') then
-                    button.Size = UDim2.new(0, tabWidth, 1, 0) -- Устанавливаем абсолютную ширину
+                    button.Size = UDim2.new(0, math.floor(tabWidth), 1, 0) -- Используем math.floor для точности
+                end
+            end
+    
+            -- Проверяем, если есть остаток из-за округления, добавляем его к последней вкладке
+            local totalAssignedWidth = math.floor(tabWidth) * tabCount + totalPadding
+            local remainingPixels = tabAreaWidth - totalAssignedWidth
+            if remainingPixels > 0 then
+                local lastButton
+                for _, button in next, TabArea:GetChildren() do
+                    if not button:IsA('UIListLayout') then
+                        lastButton = button
+                    end
+                end
+                if lastButton then
+                    lastButton.Size = UDim2.new(0, math.floor(tabWidth) + remainingPixels, 1, 0)
                 end
             end
         end
@@ -3319,6 +3336,8 @@ function Library:CreateWindow(...)
             Groupbox:Resize();
     
             Tab.Groupboxes[Info.Name] = Groupbox;
+    
+    াম
     
             return Groupbox;
         end;
