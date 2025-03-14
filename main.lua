@@ -3067,11 +3067,11 @@ function Library:CreateWindow(...)
 
     function Window:AddTab(Name)
         local Tab = {
-            Groupboxes = {},
-            Tabboxes = {},
+            Groupboxes = {};
+            Tabboxes = {};
         };
     
-        -- Create the TabButton
+        -- Создаём кнопку вкладки
         local TabButton = Library:Create('Frame', {
             BackgroundColor3 = Library.BackgroundColor,
             BorderColor3 = Library.OutlineColor,
@@ -3105,6 +3105,23 @@ function Library:CreateWindow(...)
         Library:AddToRegistry(Blocker, {
             BackgroundColor3 = 'MainColor',
         });
+    
+        -- Функция для обновления размеров вкладок
+        local function UpdateTabButtonSizes()
+            local tabCount = #TabArea:GetChildren() - 1 -- Исключаем UIListLayout
+            if tabCount > 0 then
+                local tabWidth = 1 / tabCount -- Доля ширины для каждой вкладки
+                for _, button in next, TabArea:GetChildren() do
+                    if not button:IsA('UIListLayout') then
+                        button.Size = UDim2.new(tabWidth, 0, 1, 0) -- Устанавливаем ширину как долю от общей ширины
+                    end
+                end
+            end
+        end
+    
+        -- Подключаем обновление размеров при изменении содержимого
+        TabListLayout:GetPropertyChangedSignal('AbsoluteContentSize'):Connect(UpdateTabButtonSizes)
+        UpdateTabButtonSizes() -- Вызываем сразу, чтобы установить начальные размеры
     
         local TabFrame = Library:Create('Frame', {
             Name = 'TabFrame',
@@ -3164,23 +3181,6 @@ function Library:CreateWindow(...)
             end);
         end;
     
-        -- Function to update tab button sizes
-        local function UpdateTabButtonSizes()
-            local tabCount = #TabArea:GetChildren() - 1 -- Subtract 1 to exclude UIListLayout
-            if tabCount > 0 then
-                local tabWidth = 1 / tabCount
-                for _, button in next, TabArea:GetChildren() do
-                    if not button:IsA('UIListLayout') then
-                        button.Size = UDim2.new(tabWidth, 0, 1, 0)
-                    end
-                end
-            end
-        end
-    
-        -- Connect to layout change to update sizes dynamically
-        TabListLayout:GetPropertyChangedSignal('AbsoluteContentSize'):Connect(UpdateTabButtonSizes)
-        UpdateTabButtonSizes() -- Initial call to set sizes
-    
         function Tab:ShowTab()
             for _, Tab in next, Window.Tabs do
                 Tab:HideTab();
@@ -3202,7 +3202,7 @@ function Library:CreateWindow(...)
         function Tab:SetLayoutOrder(Position)
             TabButton.LayoutOrder = Position;
             TabListLayout:ApplyLayout();
-            UpdateTabButtonSizes() -- Update sizes after reordering
+            UpdateTabButtonSizes() -- Обновляем размеры после изменения порядка
         end;
     
         function Tab:AddGroupbox(Info)
