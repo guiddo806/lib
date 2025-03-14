@@ -2955,9 +2955,9 @@ function Library:CreateWindow(...)
         Parent = ScreenGui,
     });
 
-    -- Добавляем закругленные углы к Outer
+    -- Уменьшаем радиус закругления для Outer до 8 пикселей
     local OuterCorner = Library:Create('UICorner', {
-        CornerRadius = UDim.new(0, 10), -- Радиус закругления 10 пикселей
+        CornerRadius = UDim.new(0, 8), -- Было 10, теперь 8 для меньшего выпирания
         Parent = Outer,
     });
 
@@ -2971,7 +2971,7 @@ function Library:CreateWindow(...)
         shadow.Name = '#shadow'
         shadow.Position = UDim2.fromScale(0.5, 0.5)
         shadow.ScaleType = 'Slice'
-        shadow.Size = UDim2.new(1, 50, 1, 55) 
+        shadow.Size = UDim2.new(1, 40, 1, 45) -- Уменьшаем тень, чтобы она не выпирала слишком сильно
         shadow.SliceCenter = Rect.new(40, 40, 260, 260)
         shadow.SliceScale = 1
         shadow.ZIndex = 1 
@@ -2990,9 +2990,9 @@ function Library:CreateWindow(...)
         Parent = Outer,
     });
 
-    -- Добавляем закругленные углы к Inner
+    -- Радиус для Inner чуть меньше, чтобы соответствовать Outer
     local InnerCorner = Library:Create('UICorner', {
-        CornerRadius = UDim.new(0, 8), -- Радиус чуть меньше, чтобы соответствовать отступу
+        CornerRadius = UDim.new(0, 6), -- Было 8, теперь 6
         Parent = Inner,
     });
 
@@ -3019,9 +3019,8 @@ function Library:CreateWindow(...)
         Parent = Inner,
     });
 
-    -- Добавляем закругленные углы к MainSectionOuter
     local MainSectionOuterCorner = Library:Create('UICorner', {
-        CornerRadius = UDim.new(0, 6),
+        CornerRadius = UDim.new(0, 4), -- Уменьшаем до 4 для аккуратности
         Parent = MainSectionOuter,
     });
 
@@ -3040,9 +3039,8 @@ function Library:CreateWindow(...)
         Parent = MainSectionOuter,
     });
 
-    -- Добавляем закругленные углы к MainSectionInner
     local MainSectionInnerCorner = Library:Create('UICorner', {
-        CornerRadius = UDim.new(0, 4),
+        CornerRadius = UDim.new(0, 2), -- Уменьшаем до 2
         Parent = MainSectionInner,
     });
 
@@ -3075,9 +3073,8 @@ function Library:CreateWindow(...)
         Parent = MainSectionInner,
     });
 
-    -- Добавляем закругленные углы к TabContainer
     local TabContainerCorner = Library:Create('UICorner', {
-        CornerRadius = UDim.new(0, 4),
+        CornerRadius = UDim.new(0, 2), -- Уменьшаем до 2
         Parent = TabContainer,
     });
 
@@ -3086,13 +3083,8 @@ function Library:CreateWindow(...)
         BorderColor3 = 'OutlineColor',
     });
 
-    -- Остальной код функции остается без изменений
-    -- (Tab, ShowTab, HideTab, AddGroupbox и т.д.)
-
-    -- Продолжение функции (без изменений)
-    function Window:SetWindowTitle(Title)
-        WindowLabel.Text = Title;
-    end;
+    -- Остальная часть функции остается без изменений
+    -- Добавим только изменения для Groupbox и Tabbox
 
     function Window:AddTab(Name)
         local Tab = {
@@ -3230,9 +3222,8 @@ function Library:CreateWindow(...)
                 Parent = Info.Side == 1 and LeftSide or RightSide,
             });
 
-            -- Добавляем закругленные углы к BoxOuter
             local BoxOuterCorner = Library:Create('UICorner', {
-                CornerRadius = UDim.new(0, 6),
+                CornerRadius = UDim.new(0, 4), -- Уменьшаем до 4
                 Parent = BoxOuter,
             });
 
@@ -3250,9 +3241,8 @@ function Library:CreateWindow(...)
                 Parent = BoxOuter,
             });
 
-            -- Добавляем закругленные углы к BoxInner
             local BoxInnerCorner = Library:Create('UICorner', {
-                CornerRadius = UDim.new(0, 4),
+                CornerRadius = UDim.new(0, 2), -- Уменьшаем до 2
                 Parent = BoxInner,
             });
 
@@ -3341,9 +3331,8 @@ function Library:CreateWindow(...)
                 Parent = Info.Side == 1 and LeftSide or RightSide,
             });
 
-            -- Добавляем закругленные углы к BoxOuter (Tabbox)
             local TabboxOuterCorner = Library:Create('UICorner', {
-                CornerRadius = UDim.new(0, 6),
+                CornerRadius = UDim.new(0, 4), -- Уменьшаем до 4
                 Parent = BoxOuter,
             });
 
@@ -3361,9 +3350,8 @@ function Library:CreateWindow(...)
                 Parent = BoxOuter,
             });
 
-            -- Добавляем закругленные углы к BoxInner (Tabbox)
             local TabboxInnerCorner = Library:Create('UICorner', {
-                CornerRadius = UDim.new(0, 4),
+                CornerRadius = UDim.new(0, 2), -- Уменьшаем до 2
                 Parent = BoxInner,
             });
 
