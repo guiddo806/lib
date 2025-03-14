@@ -3108,41 +3108,40 @@ function Library:CreateWindow(...)
             BackgroundColor3 = 'MainColor',
         });
     
-        -- Функция для обновления размеров вкладок
         local function UpdateTabButtonSizes()
             local tabCount = #TabArea:GetChildren() - 1 -- Исключаем UIListLayout
             if tabCount <= 0 then return end
-    
+        
             -- Получаем абсолютную ширину TabArea
             local tabAreaWidth = TabArea.AbsoluteSize.X
             if tabAreaWidth <= 0 then return end -- Защита от деления на ноль
-    
-            -- Получаем Padding из TabListLayout (в вашем случае 0)
+        
+            -- Получаем Padding из TabListLayout
             local padding = TabListLayout.Padding.Offset
             -- Общее пространство, занятое отступами
             local totalPadding = padding * math.max(0, tabCount - 1)
             -- Доступная ширина для вкладок
             local availableWidth = tabAreaWidth - totalPadding
-    
+        
             -- Минимальная ширина вкладки (для читаемости текста)
             local minTabWidth = 50
             -- Рассчитываем ширину каждой вкладки
             local tabWidth = math.max(minTabWidth, availableWidth / tabCount)
-    
+        
             -- Корректируем ширину, чтобы суммарная ширина вкладок идеально совпадала с tabAreaWidth
             local totalWidthWithTabs = tabWidth * tabCount + totalPadding
             if totalWidthWithTabs ~= tabAreaWidth then
                 -- Перераспределяем ширину, чтобы устранить зазор
                 tabWidth = (availableWidth) / tabCount
             end
-    
+        
             -- Устанавливаем размеры вкладок
             for _, button in next, TabArea:GetChildren() do
                 if not button:IsA('UIListLayout') then
                     button.Size = UDim2.new(0, math.floor(tabWidth), 1, 0) -- Используем math.floor для точности
                 end
             end
-    
+        
             -- Проверяем, если есть остаток из-за округления, добавляем его к последней вкладке
             local totalAssignedWidth = math.floor(tabWidth) * tabCount + totalPadding
             local remainingPixels = tabAreaWidth - totalAssignedWidth
@@ -3158,16 +3157,6 @@ function Library:CreateWindow(...)
                 end
             end
         end
-    
-        -- Подключаем обновление размеров при изменении содержимого
-        TabListLayout:GetPropertyChangedSignal('AbsoluteContentSize'):Connect(UpdateTabButtonSizes)
-        -- Обновляем размеры при изменении размера TabArea
-        TabArea:GetPropertyChangedSignal('AbsoluteSize'):Connect(UpdateTabButtonSizes)
-        -- Инициализируем размеры после создания
-        coroutine.wrap(function()
-            wait() -- Даём время на рендеринг
-            UpdateTabButtonSizes()
-        end)()
     
         local TabFrame = Library:Create('Frame', {
             Name = 'TabFrame',
