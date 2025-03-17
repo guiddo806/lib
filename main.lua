@@ -2955,23 +2955,22 @@ function Library:CreateWindow(...)
         Parent = ScreenGui;
     });
 
-    local shadow = Instance.new('ImageLabel')
-    do 
-        shadow.AnchorPoint = Vector2.new(0.5, 0.5)
-        shadow.BackgroundTransparency = 1
-        shadow.BorderSizePixel = 0 
-        shadow.Image = 'rbxassetid://7331400934' 
-        shadow.ImageColor3 = Library.AccentColor 
-        shadow.Name = '#shadow'
-        shadow.Position = UDim2.fromScale(0.5, 0.5)
-        shadow.ScaleType = 'Slice'
-        shadow.Size = UDim2.new(1, 50, 1, 55) 
-        shadow.SliceCenter = Rect.new(40, 40, 260, 260)
-        shadow.SliceScale = 1
-        shadow.ZIndex = 1 
-        shadow.Parent = Outer
+    local Shadow = Instance.new('ImageLabel') do
+        Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+        Shadow.BackgroundTransparency = 1
+        Shadow.BorderSizePixel = 0
+        Shadow.Image = 'rbxassetid://7331400934'
+        Shadow.ImageColor3 = Library.AccentColor
+        Shadow.Name = '#shadow'
+        Shadow.Position = UDim2.fromScale(0.5, 0.5)
+        Shadow.ScaleType = Enum.ScaleType.Slice
+        Shadow.Size = UDim2.new(1, 50, 1, 55)
+        Shadow.SliceCenter = Rect.new(40, 40, 260, 260)
+        Shadow.SliceScale = 1
+        Shadow.ZIndex = 1
+        Shadow.Parent = Outer
     
-        Library:AddToRegistry(shadow, {
+        Library:AddToRegistry(Shadow, {
             ImageColor3 = 'AccentColor'
         })
     end
