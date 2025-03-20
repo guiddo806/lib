@@ -32,7 +32,7 @@ local Library = {
     FontColor = Color3.fromRGB(255, 255, 255);
     MainColor = Color3.fromRGB(28, 28, 28);
     BackgroundColor = Color3.fromRGB(13, 13, 13);
-    AccentColor = function() return Library.CurrentRainbowColor end; 
+    AccentColor = Color3.fromRGB(108, 96, 125);
     OutlineColor = Color3.fromRGB(50, 50, 50);
     RiskColor = Color3.fromRGB(255, 50, 50),
 
@@ -46,19 +46,6 @@ local Library = {
     ScreenGui = ScreenGui;
 };
 
-function Library:UpdateColorsUsingRegistry()
-    for Idx, Object in next, Library.Registry do
-        for Property, ColorIdx in next, Object.Properties do
-            if type(ColorIdx) == 'string' then
-                local ColorValue = Library[ColorIdx]
-                Object.Instance[Property] = type(ColorValue) == 'function' and ColorValue() or ColorValue
-            elseif type(ColorIdx) == 'function' then
-                Object.Instance[Property] = ColorIdx()
-            end
-        end;
-    end;
-end;
-
 local RainbowStep = 0
 local Hue = 0
 
@@ -68,7 +55,7 @@ table.insert(Library.Signals, RenderStepped:Connect(function(Delta)
     if RainbowStep >= (1 / 60) then
         RainbowStep = 0
 
-        Hue = Hue + (1 / 400); 
+        Hue = Hue + (1 / 400);
 
         if Hue > 1 then
             Hue = 0;
@@ -76,13 +63,8 @@ table.insert(Library.Signals, RenderStepped:Connect(function(Delta)
 
         Library.CurrentRainbowHue = Hue;
         Library.CurrentRainbowColor = Color3.fromHSV(Hue, 0.8, 1);
-        Library:UpdateColorsUsingRegistry() 
     end
 end))
-
-Library.AccentColorDark = function()
-    return Library:GetDarkerColor(Library.CurrentRainbowColor)
-end
 
 local function GetPlayersString()
     local PlayerList = Players:GetPlayers();
