@@ -46,6 +46,19 @@ local Library = {
     ScreenGui = ScreenGui;
 };
 
+function Library:UpdateColorsUsingRegistry()
+    for Idx, Object in next, Library.Registry do
+        for Property, ColorIdx in next, Object.Properties do
+            if type(ColorIdx) == 'string' then
+                local ColorValue = Library[ColorIdx]
+                Object.Instance[Property] = type(ColorValue) == 'function' and ColorValue() or ColorValue
+            elseif type(ColorIdx) == 'function' then
+                Object.Instance[Property] = ColorIdx()
+            end
+        end;
+    end;
+end;
+
 local RainbowStep = 0
 local Hue = 0
 
@@ -1073,7 +1086,7 @@ do
         });
 
         local ContainerLabel = Library:CreateLabel({
-            TextXAlignment = Enum.TextXAlignment.Left;
+            TextXAlignment = Enum.TextXAlignment.Right;
             Size = UDim2.new(1, 0, 0, 18);
             TextSize = 13;
             Visible = false;
