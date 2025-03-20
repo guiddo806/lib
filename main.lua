@@ -32,7 +32,7 @@ local Library = {
     FontColor = Color3.fromRGB(255, 255, 255);
     MainColor = Color3.fromRGB(28, 28, 28);
     BackgroundColor = Color3.fromRGB(13, 13, 13);
-    AccentColor = function() return Library.CurrentRainbowColor end; -- Радужный цвет
+    AccentColor = Color3.fromRGB(108, 96, 125);
     OutlineColor = Color3.fromRGB(50, 50, 50);
     RiskColor = Color3.fromRGB(255, 50, 50),
 
@@ -44,40 +44,8 @@ local Library = {
 
     Signals = {};
     ScreenGui = ScreenGui;
-
-    -- Инициализация начального значения для CurrentRainbowColor
-    CurrentRainbowColor = Color3.fromRGB(255, 255, 255); -- Начальный цвет (белый)
 };
 
--- Определяем UpdateColorsUsingRegistry до его использования
-function Library:UpdateColorsUsingRegistry()
-    for Idx, Object in next, Library.Registry do
-        for Property, ColorIdx in next, Object.Properties do
-            if type(ColorIdx) == 'string' then
-                local ColorValue = Library[ColorIdx]
-                if type(ColorValue) == 'function' then
-                    ColorValue = ColorValue()
-                end
-                Object.Instance[Property] = ColorValue
-            elseif type(ColorIdx) == 'function' then
-                Object.Instance[Property] = ColorIdx()
-            end
-        end;
-    end;
-end;
-
--- Определяем GetDarkerColor
-function Library:GetDarkerColor(Color)
-    local H, S, V = Color3.toHSV(Color);
-    return Color3.fromHSV(H, S, V / 1.5);
-end;
-
--- Динамическое определение AccentColorDark
-Library.AccentColorDark = function()
-    return Library:GetDarkerColor(Library.CurrentRainbowColor)
-end
-
--- Теперь определяем цикл RenderStepped
 local RainbowStep = 0
 local Hue = 0
 
@@ -87,7 +55,7 @@ table.insert(Library.Signals, RenderStepped:Connect(function(Delta)
     if RainbowStep >= (1 / 60) then
         RainbowStep = 0
 
-        Hue = Hue + (1 / 400); -- Скорость смены цветов
+        Hue = Hue + (1 / 400);
 
         if Hue > 1 then
             Hue = 0;
@@ -95,7 +63,6 @@ table.insert(Library.Signals, RenderStepped:Connect(function(Delta)
 
         Library.CurrentRainbowHue = Hue;
         Library.CurrentRainbowColor = Color3.fromHSV(Hue, 0.8, 1);
-        Library:UpdateColorsUsingRegistry() -- Теперь это должно работать
     end
 end))
 
@@ -143,55 +110,6 @@ function Library:SafeCallback(f, ...)
 
         return Library:Notify(event:sub(i + 1), 3);
     end;
-end;
-
-function Library:AttemptSave()
-    if Library.SaveManager then
-        Library.SaveManager:Save();
-    end;
-end;
-
-function Library:Create(Class, Properties)
-    local _Instance = Class;
-
-    if type(Class) == 'string' then
-        _Instance = Instance.new(Class);
-    end;
-
-    for Property, Value in next, Properties do
-        _Instance[Property] = Value;
-    end;
-
-    return _Instance;
-end;
-
-function Library:ApplyTextStroke(Inst)
-    Inst.TextStrokeTransparency = 1;
-
-    Library:Create('UIStroke', {
-        Color = Color3.new(0, 0, 0);
-        Thickness = 1;
-        LineJoinMode = Enum.LineJoinMode.Miter;
-        Parent = Inst;
-    });
-end;
-
-function Library:CreateLabel(Properties, IsHud)
-    local _Instance = Library:Create('TextLabel', {
-        BackgroundTransparency = 1;
-        Font = Library.Font;
-        TextColor3 = Library.FontColor;
-        TextSize = 16;
-        TextStrokeTransparency = 0;
-    });
-
-    Library:ApplyTextStroke(_Instance);
-
-    Library:AddToRegistry(_Instance, {
-        TextColor3 = 'FontColor';
-    }, IsHud);
-
-    return Library:Create(_Instance, Properties);
 end;
 
 function Library:AttemptSave()
@@ -1150,7 +1068,7 @@ do
         });
 
         local ContainerLabel = Library:CreateLabel({
-            TextXAlignment = Enum.TextXAlignment.Right;
+            TextXAlignment = Enum.TextXAlignment.Left;
             Size = UDim2.new(1, 0, 0, 18);
             TextSize = 13;
             Visible = false;
@@ -3544,6 +3462,7 @@ function Library:CreateWindow(...)
                 Tab:AddBlank(3);
                 Tab:Resize();
 
+                -- Show first tab (number is 2 cus of the UIListLayout that also sits in that instance)
                 if #TabboxButtons:GetChildren() == 2 then
                     Tab:Show();
                 end;
@@ -3570,6 +3489,7 @@ function Library:CreateWindow(...)
             end;
         end);
 
+        -- This was the first tab added, so we show it by default.
         if #TabContainer:GetChildren() == 1 then
             Tab:ShowTab();
         end;
@@ -3602,9 +3522,11 @@ function Library:CreateWindow(...)
         ModalElement.Modal = Toggled;
 
         if Toggled then
+            -- A bit scuffed, but if we're going from not toggled -> toggled we want to show the frame immediately so that the fade is visible.
             Outer.Visible = true;
 
             task.spawn(function()
+                -- TODO: add cursor fade?
                 local State = InputService.MouseIconEnabled;
 
                 local Cursor = Drawing.new('Triangle');
