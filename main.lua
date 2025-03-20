@@ -32,7 +32,8 @@ local Library = {
     FontColor = Color3.fromRGB(255, 255, 255);
     MainColor = Color3.fromRGB(28, 28, 28);
     BackgroundColor = Color3.fromRGB(13, 13, 13);
-    AccentColor = function() return Library.CurrentRainbowColor end; 
+    AccentColor = function() return Library.CurrentRainbowColor end; -- Радужный цвет
+    OutlineColor = Color3.fromRGB(50, 50, 50);
     RiskColor = Color3.fromRGB(255, 50, 50),
 
     Black = Color3.new(0, 0, 0);
@@ -44,15 +45,20 @@ local Library = {
     Signals = {};
     ScreenGui = ScreenGui;
 
-    CurrentRainbowColor = Color3.fromRGB(255, 255, 255); 
+    -- Инициализация начального значения для CurrentRainbowColor
+    CurrentRainbowColor = Color3.fromRGB(255, 255, 255); -- Начальный цвет (белый)
 };
 
+-- Определяем UpdateColorsUsingRegistry до его использования
 function Library:UpdateColorsUsingRegistry()
     for Idx, Object in next, Library.Registry do
         for Property, ColorIdx in next, Object.Properties do
             if type(ColorIdx) == 'string' then
                 local ColorValue = Library[ColorIdx]
-                Object.Instance[Property] = type(ColorValue) == 'function' and ColorValue() or ColorValue
+                if type(ColorValue) == 'function' then
+                    ColorValue = ColorValue()
+                end
+                Object.Instance[Property] = ColorValue
             elseif type(ColorIdx) == 'function' then
                 Object.Instance[Property] = ColorIdx()
             end
@@ -60,15 +66,18 @@ function Library:UpdateColorsUsingRegistry()
     end;
 end;
 
-Library.AccentColorDark = function()
-    return Library:GetDarkerColor(Library.CurrentRainbowColor)
-end
-
+-- Определяем GetDarkerColor
 function Library:GetDarkerColor(Color)
     local H, S, V = Color3.toHSV(Color);
     return Color3.fromHSV(H, S, V / 1.5);
 end;
 
+-- Динамическое определение AccentColorDark
+Library.AccentColorDark = function()
+    return Library:GetDarkerColor(Library.CurrentRainbowColor)
+end
+
+-- Теперь определяем цикл RenderStepped
 local RainbowStep = 0
 local Hue = 0
 
@@ -78,7 +87,7 @@ table.insert(Library.Signals, RenderStepped:Connect(function(Delta)
     if RainbowStep >= (1 / 60) then
         RainbowStep = 0
 
-        Hue = Hue + (1 / 400); 
+        Hue = Hue + (1 / 400); -- Скорость смены цветов
 
         if Hue > 1 then
             Hue = 0;
@@ -86,7 +95,7 @@ table.insert(Library.Signals, RenderStepped:Connect(function(Delta)
 
         Library.CurrentRainbowHue = Hue;
         Library.CurrentRainbowColor = Color3.fromHSV(Hue, 0.8, 1);
-        Library:UpdateColorsUsingRegistry() 
+        Library:UpdateColorsUsingRegistry() -- Теперь это должно работать
     end
 end))
 
@@ -134,6 +143,55 @@ function Library:SafeCallback(f, ...)
 
         return Library:Notify(event:sub(i + 1), 3);
     end;
+end;
+
+function Library:AttemptSave()
+    if Library.SaveManager then
+        Library.SaveManager:Save();
+    end;
+end;
+
+function Library:Create(Class, Properties)
+    local _Instance = Class;
+
+    if type(Class) == 'string' then
+        _Instance = Instance.new(Class);
+    end;
+
+    for Property, Value in next, Properties do
+        _Instance[Property] = Value;
+    end;
+
+    return _Instance;
+end;
+
+function Library:ApplyTextStroke(Inst)
+    Inst.TextStrokeTransparency = 1;
+
+    Library:Create('UIStroke', {
+        Color = Color3.new(0, 0, 0);
+        Thickness = 1;
+        LineJoinMode = Enum.LineJoinMode.Miter;
+        Parent = Inst;
+    });
+end;
+
+function Library:CreateLabel(Properties, IsHud)
+    local _Instance = Library:Create('TextLabel', {
+        BackgroundTransparency = 1;
+        Font = Library.Font;
+        TextColor3 = Library.FontColor;
+        TextSize = 16;
+        TextStrokeTransparency = 0;
+    });
+
+    Library:ApplyTextStroke(_Instance);
+
+    Library:AddToRegistry(_Instance, {
+        TextColor3 = 'FontColor';
+    }, IsHud);
+
+    return Library:Create(_Instance, Properties);
 end;
 
 function Library:AttemptSave()
