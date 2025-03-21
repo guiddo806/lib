@@ -2663,7 +2663,6 @@ do
     end;
 end;
 
--- < Create other UI elements >
 do
     Library.NotificationArea = Library:Create('Frame', {
         BackgroundTransparency = 1;
@@ -2681,14 +2680,15 @@ do
     });
 
     local WatermarkOuter = Library:Create('Frame', {
+        AnchorPoint = Vector2.new(0.5, 0), 
         BorderColor3 = Color3.new(0, 0, 0);
-        Position = UDim2.new(0, 100, 0, -25);
+        Position = UDim2.new(0.5, 0, 0, -25); 
         Size = UDim2.new(0, 213, 0, 20);
         ZIndex = 200;
         Visible = false;
         Parent = ScreenGui;
     });
-
+    
     local WatermarkInner = Library:Create('Frame', {
         BackgroundColor3 = Library.MainColor;
         BorderColor3 = Library.AccentColor;
@@ -2697,11 +2697,11 @@ do
         ZIndex = 201;
         Parent = WatermarkOuter;
     });
-
+    
     Library:AddToRegistry(WatermarkInner, {
         BorderColor3 = 'AccentColor';
     });
-
+    
     local InnerFrame = Library:Create('Frame', {
         BackgroundColor3 = Color3.new(1, 1, 1);
         BorderSizePixel = 0;
@@ -2710,7 +2710,7 @@ do
         ZIndex = 202;
         Parent = WatermarkInner;
     });
-
+    
     local Gradient = Library:Create('UIGradient', {
         Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0, Library:GetDarkerColor(Library.MainColor)),
@@ -2719,7 +2719,7 @@ do
         Rotation = -90;
         Parent = InnerFrame;
     });
-
+    
     Library:AddToRegistry(Gradient, {
         Color = function()
             return ColorSequence.new({
@@ -2728,7 +2728,7 @@ do
             });
         end
     });
-
+    
     local WatermarkLabel = Library:CreateLabel({
         Position = UDim2.new(0, 5, 0, 0);
         Size = UDim2.new(1, -4, 1, 0);
@@ -2737,11 +2737,10 @@ do
         ZIndex = 203;
         Parent = InnerFrame;
     });
-
+    
     Library.Watermark = WatermarkOuter;
     Library.WatermarkText = WatermarkLabel;
     Library:MakeDraggable(Library.Watermark);
-
 
 
     local KeybindOuter = Library:Create('Frame', {
