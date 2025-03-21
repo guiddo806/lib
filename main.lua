@@ -37,7 +37,7 @@ local Library = {
     RiskColor = Color3.fromRGB(255, 50, 50),
 
     Black = Color3.new(0, 0, 0);
-    Font = Enum.Font.Arcade,
+    Font = Enum.Font.Pixel,
 
     OpenedFrames = {};
     DependencyBoxes = {};
@@ -425,7 +425,7 @@ do
             BorderMode = Enum.BorderMode.Inset;
             Size = UDim2.new(0, 28, 0, 14);
             ZIndex = 6;
-            Parent = ToggleLabel;
+            Parent = PickerContainer;
         });
 
         local CheckerFrame = Library:Create('ImageLabel', {
