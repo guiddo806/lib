@@ -2687,7 +2687,6 @@ do
         Size = UDim2.new(0, 213, 0, 20);
         ZIndex = 200;
         Visible = false;
-        Active = false;
         Parent = ScreenGui;
     });
     
@@ -2744,6 +2743,9 @@ do
     Library.WatermarkText = WatermarkLabel;
 
 
+
+
+    
     local KeybindOuter = Library:Create('Frame', {
         AnchorPoint = Vector2.new(0, 0.5);
         BorderColor3 = Color3.new(0, 0, 0);
