@@ -2743,66 +2743,6 @@ do
     Library.Watermark = WatermarkOuter;
     Library.WatermarkText = WatermarkLabel;
 
-    local function AnimateSnake()
-        local speed = 100 -- Скорость движения змейки (пикселей в секунду)
-        local snakeSize = Snake.Size.X.Offset -- Размер змейки (для коррекции позиции)
-    
-        -- Функция для обновления размера водяного знака (если он изменяется)
-        local function GetPerimeter()
-            local width = WatermarkOuter.AbsoluteSize.X
-            local height = WatermarkOuter.AbsoluteSize.Y
-            return {width = width, height = height}
-        end
-    
-        local position = 0 -- Текущая позиция змейки вдоль периметра
-        local totalPerimeter -- Общий периметр (будет рассчитан)
-    
-        -- Этапы движения: 0 - верх, 1 - право, 2 - низ, 3 - лево
-        local stage = 0
-    
-        -- Подключаем анимацию к RenderStepped
-        table.insert(Library.Signals, RunService.RenderStepped:Connect(function(delta)
-            if not WatermarkOuter.Visible then return end -- Не анимируем, если водяной знак не виден
-    
-            local dimensions = GetPerimeter()
-            local width, height = dimensions.width, dimensions.height
-            totalPerimeter = 2 * (width + height) -- Общий периметр прямоугольника
-    
-            -- Увеличиваем позицию змейки
-            position = position + speed * delta
-            if position >= totalPerimeter then
-                position = position % totalPerimeter
-                stage = 0 -- Начинаем заново с верхней стороны
-            end
-    
-            -- Определяем текущий этап
-            local topLength = width
-            local rightLength = topLength + height
-            local bottomLength = rightLength + width
-            local leftLength = bottomLength + height
-    
-            if position < topLength then
-                -- Верхняя сторона: слева направо
-                stage = 0
-                Snake.Position = UDim2.new(0, position, 0, -snakeSize / 2)
-            elseif position < rightLength then
-                -- Правая сторона: сверху вниз
-                stage = 1
-                Snake.Position = UDim2.new(1, -snakeSize / 2, 0, position - topLength)
-            elseif position < bottomLength then
-                -- Нижняя сторона: справа налево
-                stage = 2
-                Snake.Position = UDim2.new(1, -(position - rightLength) - snakeSize, 1, -snakeSize / 2)
-            else
-                -- Левая сторона: снизу вверх
-                stage = 3
-                Snake.Position = UDim2.new(0, -snakeSize / 2, 1, -(position - bottomLength) - snakeSize)
-            end
-        end))
-    end
-    
-    -- Запускаем анимацию
-    AnimateSnake()
 
     local KeybindOuter = Library:Create('Frame', {
         AnchorPoint = Vector2.new(0, 0.5);
