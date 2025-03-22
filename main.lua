@@ -2742,7 +2742,6 @@ do
     
     Library.Watermark = WatermarkOuter;
     Library.WatermarkText = WatermarkLabel;
-    Library:MakeDraggable(Library.Watermark);
 
 
     local KeybindOuter = Library:Create('Frame', {
