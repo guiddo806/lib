@@ -425,7 +425,7 @@ do
             BorderMode = Enum.BorderMode.Inset;
             Size = UDim2.new(0, 28, 0, 14);
             ZIndex = 6;
-            Parent = PickerContainer;
+            Parent = ToggleLabel;
         });
 
         local CheckerFrame = Library:Create('ImageLabel', {
