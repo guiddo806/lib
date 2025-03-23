@@ -3115,13 +3115,22 @@ function Library:CreateWindow(...)
             Parent = TabContainer;
         });
 
+        local TabImage = Library:Create('ImageLabel', {
+            BackgroundTransparency = 1;
+            Image = 'rbxassetid://16148205749', 
+            Size = UDim2.new(1, 0, 1, 0), 
+            Position = UDim2.new(0, 0, 0, 0),
+            ZIndex = 1; 
+            Parent = TabFrame;
+        });
+
         local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
             Position = UDim2.new(0, 8 - 1, 0, 8 - 1);
             Size = UDim2.new(0.5, -12 + 2, 0, 507 + 2);
             CanvasSize = UDim2.new(0, 0, 0, 0);
-            BottomImage = 'rbxassetid://16148205749';
+            BottomImage = '';
             TopImage = '';
             ScrollBarThickness = 0;
             ZIndex = 2;
@@ -3134,7 +3143,7 @@ function Library:CreateWindow(...)
             Position = UDim2.new(0.5, 4 + 1, 0, 8 - 1);
             Size = UDim2.new(0.5, -12 + 2, 0, 507 + 2);
             CanvasSize = UDim2.new(0, 0, 0, 0);
-            BottomImage = 'rbxassetid://16148205749';
+            BottomImage = '';
             TopImage = '';
             ScrollBarThickness = 0;
             ZIndex = 2;
