@@ -1,13 +1,13 @@
-local InputService = game:GetService('UserInputService');
-local TextService = game:GetService('TextService');
-local CoreGui = game:GetService('CoreGui');
-local Teams = game:GetService('Teams');
-local Players = game:GetService('Players');
-local RunService = game:GetService('RunService')
-local TweenService = game:GetService('TweenService');
-local RenderStepped = RunService.RenderStepped;
-local LocalPlayer = Players.LocalPlayer;
-local Mouse = LocalPlayer:GetMouse();
+local InputService              = game:GetService('UserInputService');
+local TextService               = game:GetService('TextService');
+local CoreGui                   = game:GetService('CoreGui');
+local Teams                     = game:GetService('Teams');
+local Players                   = game:GetService('Players');
+local RunService                = game:GetService('RunService')
+local TweenService              = game:GetService('TweenService');
+local RenderStepped             = RunService.RenderStepped;
+local LocalPlayer               = Players.LocalPlayer;
+local Mouse                     = LocalPlayer:GetMouse();
 
 local ProtectGui = protectgui or (syn and syn.protect_gui) or (function() end);
 
@@ -17,37 +17,32 @@ ProtectGui(ScreenGui);
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global;
 ScreenGui.Parent = CoreGui;
 
-local Toggles = {};
-local Options = {};
+local Toggles                   = {};
+local Options                   = {};
 
-getgenv().Toggles = Toggles;
-getgenv().Options = Options;
+getgenv().Toggles               = Toggles;
+getgenv().Options               = Options;
 
 local Library = {
-    Registry = {};
-    RegistryMap = {};
-
-    HudRegistry = {};
-
-    FontColor = Color3.fromRGB(255, 255, 255);
-    MainColor = Color3.fromRGB(28, 28, 28);
-    BackgroundColor = Color3.fromRGB(13, 13, 13);
-    AccentColor = Color3.fromRGB(108, 96, 125);
-    OutlineColor = Color3.fromRGB(50, 50, 50);
-    RiskColor = Color3.fromRGB(255, 50, 50),
-
-    Black = Color3.new(0, 0, 0);
-    Font = Enum.Font.Arcade,
-
-    OpenedFrames = {};
-    DependencyBoxes = {};
-
-    Signals = {};
-    ScreenGui = ScreenGui;
+    Registry                    = {};
+    RegistryMap                 = {};
+    HudRegistry                 = {};
+    FontColor                   = Color3.fromRGB(255, 255, 255);
+    MainColor                   = Color3.fromRGB(28, 28, 28);
+    BackgroundColor             = Color3.fromRGB(13, 13, 13);
+    AccentColor                 = Color3.fromRGB(108, 96, 125);
+    OutlineColor                = Color3.fromRGB(50, 50, 50);
+    RiskColor                   = Color3.fromRGB(255, 50, 50),
+    Black                       = Color3.new(0, 0, 0);
+    Font                        = Enum.Font.Arcade,
+    OpenedFrames                = {};
+    DependencyBoxes             = {};
+    Signals                     = {};
+    ScreenGui                   = ScreenGui;
 };
 
-local RainbowStep = 0
-local Hue = 0
+local RainbowStep               = 0
+local Hue                       = 0
 
 table.insert(Library.Signals, RenderStepped:Connect(function(Delta)
     RainbowStep = RainbowStep + Delta
@@ -3118,10 +3113,10 @@ function Library:CreateWindow(...)
         if ImageId then
             local TabImage = Library:Create('ImageLabel', {
                 BackgroundTransparency = 1;
-                Image = 'rbxassetid://16148205749', 
+                Image = ImageId, 
                 Size = UDim2.new(1, 0, 1, 0), 
                 Position = UDim2.new(0, 0, 0, 0),
-                ZIndex = 2; 
+                ZIndex = 1; 
                 Parent = TabFrame;
             });
         end;
@@ -3172,7 +3167,7 @@ function Library:CreateWindow(...)
             Side:WaitForChild('UIListLayout'):GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
                 Side.CanvasSize = UDim2.fromOffset(0, Side.UIListLayout.AbsoluteContentSize.Y);
             end);
-        end;
+        end
 
         function Tab:ShowTab()
             for _, Tab in next, Window.Tabs do
