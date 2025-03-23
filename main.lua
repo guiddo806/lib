@@ -3062,14 +3062,14 @@ function Library:CreateWindow(...)
         WindowLabel.Text = Title;
     end;
 
-    function Window:AddTab(Name)
+    function Window:AddTab(Name, ImageId) -- Добавляем необязательный параметр ImageId
         local Tab = {
             Groupboxes = {};
             Tabboxes = {};
         };
-
+    
         local TabButtonWidth = Library:GetTextBounds(Name, Library.Font, 16) + 50;
-
+    
         local TabButton = Library:Create('Frame', {
             BackgroundColor3 = Library.BackgroundColor;
             BorderColor3 = Library.OutlineColor;
@@ -3077,12 +3077,12 @@ function Library:CreateWindow(...)
             ZIndex = 2;
             Parent = TabArea;
         });
-
+    
         Library:AddToRegistry(TabButton, {
             BackgroundColor3 = 'BackgroundColor';
             BorderColor3 = 'OutlineColor';
         });
-
+    
         local TabButtonLabel = Library:CreateLabel({
             Position = UDim2.new(0, 0, 0, 0);
             Size = UDim2.new(1, 0, 1, -1),
@@ -3090,7 +3090,7 @@ function Library:CreateWindow(...)
             ZIndex = 2;
             Parent = TabButton;
         });
-
+    
         local Blocker = Library:Create('Frame', {
             BackgroundColor3 = Library.MainColor;
             BorderSizePixel = 0;
@@ -3100,11 +3100,11 @@ function Library:CreateWindow(...)
             ZIndex = 3;
             Parent = TabButton;
         });
-
+    
         Library:AddToRegistry(Blocker, {
             BackgroundColor3 = 'MainColor';
         });
-
+    
         local TabFrame = Library:Create('Frame', {
             Name = 'TabFrame',
             BackgroundTransparency = 1;
@@ -3114,16 +3114,18 @@ function Library:CreateWindow(...)
             ZIndex = 2;
             Parent = TabContainer;
         });
-
-        local TabImage = Library:Create('ImageLabel', {
-            BackgroundTransparency = 1;
-            Image = 'rbxassetid://16148205749', 
-            Size = UDim2.new(1, 0, 1, 0), 
-            Position = UDim2.new(0, 0, 0, 0),
-            ZIndex = 1; 
-            Parent = TabFrame;
-        });
-
+    
+        if ImageId then
+            local TabImage = Library:Create('ImageLabel', {
+                BackgroundTransparency = 1;
+                Image = 'rbxassetid://16148205749', 
+                Size = UDim2.new(1, 0, 1, 0), 
+                Position = UDim2.new(0, 0, 0, 0),
+                ZIndex = 1; 
+                Parent = TabFrame;
+            });
+        end;
+    
         local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
@@ -3136,7 +3138,7 @@ function Library:CreateWindow(...)
             ZIndex = 2;
             Parent = TabFrame;
         });
-
+    
         local RightSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
@@ -3149,7 +3151,7 @@ function Library:CreateWindow(...)
             ZIndex = 2;
             Parent = TabFrame;
         });
-
+    
         Library:Create('UIListLayout', {
             Padding = UDim.new(0, 8);
             FillDirection = Enum.FillDirection.Vertical;
@@ -3157,7 +3159,7 @@ function Library:CreateWindow(...)
             HorizontalAlignment = Enum.HorizontalAlignment.Center;
             Parent = LeftSide;
         });
-
+    
         Library:Create('UIListLayout', {
             Padding = UDim.new(0, 8);
             FillDirection = Enum.FillDirection.Vertical;
@@ -3165,7 +3167,7 @@ function Library:CreateWindow(...)
             HorizontalAlignment = Enum.HorizontalAlignment.Center;
             Parent = RightSide;
         });
-
+    
         for _, Side in next, { LeftSide, RightSide } do
             Side:WaitForChild('UIListLayout'):GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
                 Side.CanvasSize = UDim2.fromOffset(0, Side.UIListLayout.AbsoluteContentSize.Y);
