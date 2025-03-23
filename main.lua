@@ -2742,10 +2742,6 @@ do
     Library.Watermark = WatermarkOuter;
     Library.WatermarkText = WatermarkLabel;
 
-
-
-
-    
     local KeybindOuter = Library:Create('Frame', {
         AnchorPoint = Vector2.new(0, 0.5);
         BorderColor3 = Color3.new(0, 0, 0);
@@ -3118,12 +3114,13 @@ function Library:CreateWindow(...)
             ZIndex = 2;
             Parent = TabContainer;
         });
-
+    
+        -- Левая сторона
         local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
             Position = UDim2.new(0, 8 - 1, 0, 8 - 1);
-            Size = UDim2.new(0.5, -12 + 2, 0, 507 + 2);
+            Size = UDim2.new(0.33, -12 + 2, 0, 507 + 2); -- Уменьшаем ширину до 1/3
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
@@ -3131,12 +3128,27 @@ function Library:CreateWindow(...)
             ZIndex = 2;
             Parent = TabFrame;
         });
-
+    
+        -- Центральная сторона (новая)
+        local CenterSide = Library:Create('ScrollingFrame', {
+            BackgroundTransparency = 1;
+            BorderSizePixel = 0;
+            Position = UDim2.new(0.33, 4, 0, 8 - 1); -- Начинается после левой трети
+            Size = UDim2.new(0.33, -8, 0, 507 + 2); -- Ширина 1/3
+            CanvasSize = UDim2.new(0, 0, 0, 0);
+            BottomImage = '';
+            TopImage = '';
+            ScrollBarThickness = 0;
+            ZIndex = 2;
+            Parent = TabFrame;
+        });
+    
+        -- Правая сторона
         local RightSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0.5, 4 + 1, 0, 8 - 1);
-            Size = UDim2.new(0.5, -12 + 2, 0, 507 + 2);
+            Position = UDim2.new(0.66, 4 + 1, 0, 8 - 1); -- Начинается после центральной трети
+            Size = UDim2.new(0.33, -12 + 2, 0, 507 + 2); -- Ширина 1/3
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
@@ -3144,24 +3156,17 @@ function Library:CreateWindow(...)
             ZIndex = 2;
             Parent = TabFrame;
         });
-
-        Library:Create('UIListLayout', {
-            Padding = UDim.new(0, 8);
-            FillDirection = Enum.FillDirection.Vertical;
-            SortOrder = Enum.SortOrder.LayoutOrder;
-            HorizontalAlignment = Enum.HorizontalAlignment.Center;
-            Parent = LeftSide;
-        });
-
-        Library:Create('UIListLayout', {
-            Padding = UDim.new(0, 8);
-            FillDirection = Enum.FillDirection.Vertical;
-            SortOrder = Enum.SortOrder.LayoutOrder;
-            HorizontalAlignment = Enum.HorizontalAlignment.Center;
-            Parent = RightSide;
-        });
-
-        for _, Side in next, { LeftSide, RightSide } do
+    
+        -- Добавляем UIListLayout для всех сторон
+        for _, Side in next, { LeftSide, CenterSide, RightSide } do
+            Library:Create('UIListLayout', {
+                Padding = UDim2.new(0, 8);
+                FillDirection = Enum.FillDirection.Vertical;
+                SortOrder = Enum.SortOrder.LayoutOrder;
+                HorizontalAlignment = Enum.HorizontalAlignment.Center;
+                Parent = Side;
+            });
+    
             Side:WaitForChild('UIListLayout'):GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
                 Side.CanvasSize = UDim2.fromOffset(0, Side.UIListLayout.AbsoluteContentSize.Y);
             end);
