@@ -3062,7 +3062,7 @@ function Library:CreateWindow(...)
         WindowLabel.Text = Title;
     end;
 
-    function Window:AddTab(Name, ImageId) -- Добавляем необязательный параметр ImageId
+    function Window:AddTab(Name, ImageId) 
         local Tab = {
             Groupboxes = {};
             Tabboxes = {};
@@ -3121,7 +3121,7 @@ function Library:CreateWindow(...)
                 Image = 'rbxassetid://16148205749', 
                 Size = UDim2.new(1, 0, 1, 0), 
                 Position = UDim2.new(0, 0, 0, 0),
-                ZIndex = 1; 
+                ZIndex = 2; 
                 Parent = TabFrame;
             });
         end;
