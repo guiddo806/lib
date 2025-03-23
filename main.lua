@@ -37,6 +37,7 @@ local Library = {
     Font                        = Enum.Font.Arcade,
     OpenedFrames                = {};
     DependencyBoxes             = {};
+
     Signals                     = {};
     ScreenGui                   = ScreenGui;
 };
@@ -3063,7 +3064,7 @@ function Library:CreateWindow(...)
             Tabboxes = {};
         };
     
-        local TabButtonWidth = Library:GetTextBounds(Name, Library.Font, 16) + 70;
+        local TabButtonWidth = Library:GetTextBounds(Name, Library.Font, 16) + 50;
     
         local TabButton = Library:Create('Frame', {
             BackgroundColor3 = Library.BackgroundColor;
@@ -3113,7 +3114,7 @@ function Library:CreateWindow(...)
         if ImageId then
             local TabImage = Library:Create('ImageLabel', {
                 BackgroundTransparency = 1;
-                Image = ImageId, 
+                Image = 'rbxassetid://16148205749', 
                 Size = UDim2.new(1, 0, 1, 0), 
                 Position = UDim2.new(0, 0, 0, 0),
                 ZIndex = 2; 
@@ -3167,7 +3168,7 @@ function Library:CreateWindow(...)
             Side:WaitForChild('UIListLayout'):GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
                 Side.CanvasSize = UDim2.fromOffset(0, Side.UIListLayout.AbsoluteContentSize.Y);
             end);
-        end
+        end;
 
         function Tab:ShowTab()
             for _, Tab in next, Window.Tabs do
