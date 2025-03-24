@@ -2981,6 +2981,16 @@ function Library:CreateWindow(...)
         Parent = Outer;
     });
 
+    local BackgroundImage = Library:Create('ImageLabel', {
+        BackgroundTransparency = 1; 
+        Image = 'rbxassetid://16148205749', 
+        Size = UDim2.new(1, 0, 1, 0); 
+        Position = UDim2.new(0, 0, 0, 0); 
+        ZIndex = 1;
+        ScaleType = Enum.ScaleType.Stretch; 
+        Parent = Inner;
+    });
+
     Library:AddToRegistry(Inner, {
         BackgroundColor3 = 'MainColor';
         BorderColor3 = 'AccentColor';
