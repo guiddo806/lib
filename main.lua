@@ -3009,13 +3009,26 @@ function Library:CreateWindow(...)
         BorderColor3 = 'OutlineColor';
     });
 
-    -- Перемещаем TabArea на уровень MainSectionOuter
-    local TabArea = Library:Create('Frame', {
-        BackgroundTransparency = 1;
-        Position = UDim2.new(0, 0, 0, 0); -- Устанавливаем в верхнюю часть MainSectionOuter
-        Size = UDim2.new(1, 0, 0, 21); -- Ширина — вся ширина MainSectionOuter, высота — 21 пиксель
+    local MainSectionInner = Library:Create('Frame', {
+        BackgroundColor3 = Library.BackgroundColor;
+        BorderColor3 = Color3.new(0, 0, 0);
+        BorderMode = Enum.BorderMode.Inset;
+        Position = UDim2.new(0, 0, 0, 0);
+        Size = UDim2.new(1, 0, 1, 0);
         ZIndex = 2;
         Parent = MainSectionOuter;
+    });
+
+    Library:AddToRegistry(MainSectionInner, {
+        BackgroundColor3 = 'BackgroundColor';
+    });
+
+    local TabArea = Library:Create('Frame', {
+        BackgroundTransparency = 1;
+        Position = UDim2.new(0, 8, 0, 8);
+        Size = UDim2.new(1, -16, 0, 21);
+        ZIndex = 2;
+        Parent = MainSectionInner;
     });
 
     local TabListLayout = Library:Create('UIListLayout', {
@@ -3026,30 +3039,15 @@ function Library:CreateWindow(...)
         Parent = TabArea;
     });
 
-    -- Сдвигаем MainSectionInner ниже TabArea
-    local MainSectionInner = Library:Create('Frame', {
-        BackgroundColor3 = Library.BackgroundColor;
-        BorderColor3 = Color3.new(0, 0, 0);
-        BorderMode = Enum.BorderMode.Inset;
-        Position = UDim2.new(0, 0, 0, 21); -- Сдвигаем вниз на высоту TabArea (21 пиксель)
-        Size = UDim2.new(1, 0, 1, -21); -- Уменьшаем высоту, чтобы учесть TabArea
-        ZIndex = 2;
-        Parent = MainSectionOuter;
-    });
-
-    Library:AddToRegistry(MainSectionInner, {
-        BackgroundColor3 = 'BackgroundColor';
-    });
-
-    -- Обновляем позицию и размер TabContainer
     local TabContainer = Library:Create('Frame', {
         BackgroundColor3 = Library.MainColor;
         BorderColor3 = Library.OutlineColor;
-        Position = UDim2.new(0, 0, 0, 0); -- Теперь TabContainer занимает всю площадь MainSectionInner
-        Size = UDim2.new(1, 0, 1, 0);
+        Position = UDim2.new(0, 8, 0, 30);
+        Size = UDim2.new(1, -16, 1, -38);
         ZIndex = 2;
         Parent = MainSectionInner;
     });
+    
 
     Library:AddToRegistry(TabContainer, {
         BackgroundColor3 = 'MainColor';
@@ -3065,30 +3063,31 @@ function Library:CreateWindow(...)
             Groupboxes = {};
             Tabboxes = {};
         };
-
-        -- Создаем кнопку таба
+    
+        local TabButtonWidth = Library:GetTextBounds(Name, Library.Font, 16) + 50;
+    
         local TabButton = Library:Create('Frame', {
             BackgroundColor3 = Library.BackgroundColor;
             BorderColor3 = Library.OutlineColor;
-            Size = UDim2.new(0, 0, 1, 0), -- Начальная ширина 0, будет изменена позже
+            Size = UDim2.new(0, TabButtonWidth + 8 + 4, 1, 0),
             ZIndex = 2;
             Parent = TabArea;
         });
-
+    
         Library:AddToRegistry(TabButton, {
             BackgroundColor3 = 'BackgroundColor';
             BorderColor3 = 'OutlineColor';
         });
-
+    
         local TabButtonLabel = Library:CreateLabel({
             Position = UDim2.new(0, 0, 0, 0);
             Size = UDim2.new(1, 0, 1, -1),
             Text = Name;
-            TextXAlignment = Enum.TextXAlignment.Center; -- Центрируем текст
+            TextXAlignment = Enum.TextXAlignment.Center; 
             ZIndex = 2;
             Parent = TabButton;
         });
-
+    
         local Blocker = Library:Create('Frame', {
             BackgroundColor3 = Library.MainColor;
             BorderSizePixel = 0;
@@ -3098,11 +3097,11 @@ function Library:CreateWindow(...)
             ZIndex = 3;
             Parent = TabButton;
         });
-
+    
         Library:AddToRegistry(Blocker, {
             BackgroundColor3 = 'MainColor';
         });
-
+    
         local TabFrame = Library:Create('Frame', {
             Name = 'TabFrame',
             BackgroundTransparency = 1;
@@ -3112,18 +3111,18 @@ function Library:CreateWindow(...)
             ZIndex = 2;
             Parent = TabContainer;
         });
-
+    
         if ImageId then
             local TabImage = Library:Create('ImageLabel', {
                 BackgroundTransparency = 1;
-                Image = 'rbxassetid://' .. ImageId, 
+                Image = 'rbxassetid://16148205749', 
                 Size = UDim2.new(1, 0, 1, 0), 
                 Position = UDim2.new(0, 0, 0, 0),
                 ZIndex = 2; 
                 Parent = TabFrame;
             });
         end;
-
+    
         local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
@@ -3136,7 +3135,7 @@ function Library:CreateWindow(...)
             ZIndex = 2;
             Parent = TabFrame;
         });
-
+    
         local RightSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
@@ -3149,7 +3148,7 @@ function Library:CreateWindow(...)
             ZIndex = 2;
             Parent = TabFrame;
         });
-
+    
         Library:Create('UIListLayout', {
             Padding = UDim.new(0, 8);
             FillDirection = Enum.FillDirection.Vertical;
@@ -3157,7 +3156,7 @@ function Library:CreateWindow(...)
             HorizontalAlignment = Enum.HorizontalAlignment.Center;
             Parent = LeftSide;
         });
-
+    
         Library:Create('UIListLayout', {
             Padding = UDim.new(0, 8);
             FillDirection = Enum.FillDirection.Vertical;
@@ -3165,41 +3164,12 @@ function Library:CreateWindow(...)
             HorizontalAlignment = Enum.HorizontalAlignment.Center;
             Parent = RightSide;
         });
-
+    
         for _, Side in next, { LeftSide, RightSide } do
             Side:WaitForChild('UIListLayout'):GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
                 Side.CanvasSize = UDim2.fromOffset(0, Side.UIListLayout.AbsoluteContentSize.Y);
             end);
         end;
-
-        -- Функция для обновления размеров табов
-        local function UpdateTabSizes()
-            local tabCount = 0
-            for _, child in pairs(TabArea:GetChildren()) do
-                if child:IsA('Frame') then
-                    tabCount = tabCount + 1
-                end
-            end
-
-            -- Если табов нет, ничего не делаем
-            if tabCount == 0 then return end
-
-            -- Вычисляем ширину для каждого таба
-            local tabWidth = 1 / tabCount -- Делим ширину поровну между табами
-
-            for _, child in pairs(TabArea:GetChildren()) do
-                if child:IsA('Frame') then
-                    child.Size = UDim2.new(tabWidth, 0, 1, 0) -- Устанавливаем ширину пропорционально
-                end
-            end
-        end
-
-        -- Вызываем обновление размеров сразу после создания таба
-        UpdateTabSizes()
-
-        -- Подключаем обновление размеров при изменении количества табов
-        TabArea.ChildAdded:Connect(UpdateTabSizes)
-        TabArea.ChildRemoved:Connect(UpdateTabSizes)
 
         function Tab:ShowTab()
             for _, Tab in next, Window.Tabs do
@@ -3222,7 +3192,6 @@ function Library:CreateWindow(...)
         function Tab:SetLayoutOrder(Position)
             TabButton.LayoutOrder = Position;
             TabListLayout:ApplyLayout();
-            UpdateTabSizes() -- Обновляем размеры после изменения порядка
         end;
 
         function Tab:AddGroupbox(Info)
@@ -3559,9 +3528,11 @@ function Library:CreateWindow(...)
         ModalElement.Modal = Toggled;
 
         if Toggled then
+            -- A bit scuffed, but if we're going from not toggled -> toggled we want to show the frame immediately so that the fade is visible.
             Outer.Visible = true;
 
             task.spawn(function()
+                -- TODO: add cursor fade?
                 local State = InputService.MouseIconEnabled;
 
                 local Cursor = Drawing.new('Triangle');
