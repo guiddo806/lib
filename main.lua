@@ -2949,22 +2949,26 @@ function Library:CreateWindow(...)
         Parent = ScreenGui;
     });
 
-    local Glow = utility:Create("ImageLabel", {
-        Name = "Glow",
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, -15, 0, -15),
-        Size = UDim2.new(1, 30, 1, 30),
-        ZIndex = 0,
-        Image = "rbxassetid://5028857084",
-        ImageColor3 = Library.AccentColor, 
-        ScaleType = Enum.ScaleType.Slice,
-        SliceCenter = Rect.new(24, 24, 276, 276),
-        Parent = Outer
-    })
+    local Shadow = Instance.new('ImageLabel') do
+        Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+        Shadow.BackgroundTransparency = 1
+        Shadow.BorderSizePixel = 0
+        Shadow.Image = 'rbxassetid://7331400934'
+        Shadow.ImageColor3 = Library.AccentColor
+        Shadow.Name = '#shadow'
+        Shadow.Position = UDim2.fromScale(0.5, 0.5)
+        Shadow.ScaleType = Enum.ScaleType.Slice
+        Shadow.Size = UDim2.new(1, 50, 1, 55)
+        Shadow.SliceCenter = Rect.new(40, 40, 260, 260)
+        Shadow.SliceScale = 1
+        Shadow.ZIndex = 1
+        Shadow.Parent = Outer
+    
+        Library:AddToRegistry(Shadow, {
+            ImageColor3 = 'AccentColor'
+        })
+    end
 
-    Library:AddToRegistry(Glow, {
-        ImageColor3 = 'AccentColor'
-    })
     Library:MakeDraggable(Outer, 25);
 
     local Inner = Library:Create('Frame', {
