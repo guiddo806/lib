@@ -34,7 +34,7 @@ local Library = {
     OutlineColor                = Color3.fromRGB(50, 50, 50);
     RiskColor                   = Color3.fromRGB(255, 50, 50),
     Black                       = Color3.new(0, 0, 0);
-    Font                        = Enum.Font.Arcade,
+    Font                        = Enum.Font.Code,
     OpenedFrames                = {};
     DependencyBoxes             = {};
 
@@ -2953,7 +2953,7 @@ function Library:CreateWindow(...)
         Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
         Shadow.BackgroundTransparency = 1
         Shadow.BorderSizePixel = 0
-        Shadow.Image = 'rbxassetid://5028857084'
+        Shadow.Image = 'rbxassetid://7331400934'
         Shadow.ImageColor3 = Library.AccentColor
         Shadow.Name = '#shadow'
         Shadow.Position = UDim2.fromScale(0.5, 0.5)
