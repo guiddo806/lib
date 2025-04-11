@@ -34,7 +34,7 @@ local Library = {
     OutlineColor                = Color3.fromRGB(50, 50, 50);
     RiskColor                   = Color3.fromRGB(255, 50, 50),
     Black                       = Color3.new(0, 0, 0);
-    Font                        = Enum.Font.fromId(12187371840),
+    Font                        = Enum.Font.Code,
     OpenedFrames                = {};
     DependencyBoxes             = {};
 
@@ -142,7 +142,7 @@ end;
 function Library:CreateLabel(Properties, IsHud)
     local _Instance = Library:Create('TextLabel', {
         BackgroundTransparency = 1;
-        FontFace = Library.Font;
+        Font = Library.Font;
         TextColor3 = Library.FontColor;
         TextSize = 16;
         TextStrokeTransparency = 0;
