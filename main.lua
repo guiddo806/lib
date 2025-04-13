@@ -683,7 +683,7 @@ do
             end
 
             local function updateMenuSize()
-                local menuWidth = 60
+                local menuWidth = 80
                 for i, label in next, ContextMenu.Inner:GetChildren() do
                     if label:IsA('TextLabel') then
                         menuWidth = math.max(menuWidth, label.TextBounds.X)
@@ -2979,16 +2979,6 @@ function Library:CreateWindow(...)
         Size = UDim2.new(1, -2, 1, -2);
         ZIndex = 2;
         Parent = Outer;
-    });
-
-    local BackgroundImage = Library:Create('ImageLabel', {
-        BackgroundTransparency = 1; 
-        Image = 'rbxassetid://120480276406767', 
-        Size = UDim2.new(1, -2, 1, -2); 
-        Position = UDim2.new(0, 1, 0, 1); 
-        ZIndex = 1;
-        ScaleType = Enum.ScaleType.Stretch; 
-        Parent = Inner;
     });
 
     Library:AddToRegistry(Inner, {
