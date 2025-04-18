@@ -154,16 +154,16 @@ local Templates = {
 
     --// Library \\--
     Window = {
-        Title = "No Title",
-        Footer = "No Footer",
+        Title = "",
+        Footer = "",
         Position = UDim2.fromOffset(6, 6),
         Size = UDim2.fromOffset(720, 600),
         IconSize = UDim2.fromOffset(30, 30),
         AutoShow = true,
         Center = true,
-        Resizable = true,
+        Resizable = false,
         CornerRadius = 4,
-        NotifySide = "Right",
+        NotifySide = "Left",
         ShowCustomCursor = true,
         Font = Enum.Font.Code,
         ToggleKeybind = Enum.KeyCode.RightControl,
