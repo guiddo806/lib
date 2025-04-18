@@ -922,7 +922,7 @@ function Library:AddDraggableMenu(Name: string)
         BackgroundTransparency = 1,
         Size = UDim2.new(1, 0, 0, 34),
         Text = Name,
-        TextSize = 15,
+        TextSize = 14,
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = Holder,
     })
