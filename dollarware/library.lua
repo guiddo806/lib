@@ -628,8 +628,7 @@ do
         controlMenu.AutomaticCanvasSize = 'Y'
         controlMenu.BackgroundTransparency = 1
         controlMenu.Position = UDim2.fromOffset(1, 17)
-        controlMenu.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
-        controlMenu.ScrollBarImageTransparency = 0.9
+        controlMenu.ScrollBarImageColor3 = Color3.fromRGB(255, 255,  CardiolMenu.ScrollBarImageTransparency = 0.9
         controlMenu.ScrollBarThickness = 1
         controlMenu.Size = UDim2.new(1, -2, 1, -18)
         controlMenu.ZIndex = 33
@@ -717,7 +716,7 @@ do
     ui.class = 'ui'
     ui.binds = {}
 
-    ui.newWindow = function(settings)
+    ui.newWindow = function(self, settings)
         if not settings or type(settings) ~= 'table' then return error('expected type table for settings', 2) end
         local s_title = settings.text or 'nil'
         local s_position = settings.position or defaultWinPos
@@ -740,13 +739,16 @@ do
         return window
     end
 
-    ui.destroy = function(noWindows)
-        ui:fireEvent('onPreDestroy')
+    ui.destroy = function(self, noWindows)
+        self:fireEvent('onPreDestroy')
         delay(0.4, function() uiScreen:Destroy() uiScreen = nil end)
-        if not noWindows then for _, win in ipairs(ui.windows) do win:destroy() end end
+        if not noWindows then for _, win in ipairs(self.windows) do win:destroy() end end
         for _, v in pairs(elemClasses) do if v.instances then for _, inst in pairs(v.instances) do inst:Destroy() end end end
-        ui:fireEvent('onDestroy')
+        self:fireEvent('onDestroy')
     end
 end
 
-return ui
+-- Создаем глобальную функцию library, которая возвращает ui
+getgenv().library = function()
+    return ui
+end
