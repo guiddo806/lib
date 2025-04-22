@@ -2953,7 +2953,7 @@ function Library:CreateWindow(...)
         Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
         Shadow.BackgroundTransparency = 1
         Shadow.BorderSizePixel = 0
-        Shadow.Image = 'rbxassetid://6015897843'
+        Shadow.Image = 'rbxassetid://7331400934'
         Shadow.ImageColor3 = Library.AccentColor
         Shadow.Name = '#shadow'
         Shadow.Position = UDim2.fromScale(0.5, 0.5)
