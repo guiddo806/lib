@@ -1832,7 +1832,7 @@ do
         });
 
         local ToggleLabel = Library:CreateLabel({
-            Size = UDim2.new(0, 334, 1, 0);
+            Size = UDim2.new(0, 340, 1, 0);
             Position = UDim2.new(1, 6, 0, 0);
             TextSize = 14;
             Text = Info.Text;
