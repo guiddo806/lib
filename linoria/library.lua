@@ -2958,7 +2958,7 @@ function Library:CreateWindow(...)
         Shadow.Name = '#shadow'
         Shadow.Position = UDim2.fromScale(0.5, 0.5)
         Shadow.ScaleType = Enum.ScaleType.Slice
-        Shadow.Size = UDim2.new(1, 52, 1, 52)
+        Shadow.Size = UDim2.new(1, 50, 1, 50)
         Shadow.SliceCenter = Rect.new(40, 40, 260, 260)
         Shadow.SliceScale = 1
         Shadow.ZIndex = 1
