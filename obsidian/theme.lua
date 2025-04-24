@@ -5,8 +5,6 @@ local getassetfunc = getcustomasset or getsynasset
 local isfolder, isfile, listfiles = isfolder, isfile, listfiles
 
 if typeof(copyfunction) == "function" then
-    -- Fix is_____ functions for shitsploits, those functions should never error, only return a boolean.
-
     local
         isfolder_copy,
         isfile_copy,
@@ -39,7 +37,7 @@ local ThemeManager = {} do
 
     ThemeManager.Library = nil
     ThemeManager.BuiltInThemes = {
-        ["Default"] 		    = { 1, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"1c1c1c","AccentColor":"6c607d","BackgroundColor":"0d0d0d","OutlineColor":"27232f"}') },
+        ["Default"] 		    = { 1, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"00000","AccentColor":"6c607d","BackgroundColor":"00000","OutlineColor":"1f1d22"}') },
         ["BBot"] 			    = { 2, httpService:JSONDecode([[{"FontColor":"ffffff","MainColor":"1e1e1e","AccentColor":"7e48a3","BackgroundColor":"232323","OutlineColor":"141414"}]]) },
         ["Fatality"]		    = { 3, httpService:JSONDecode([[{"FontColor":"ffffff","MainColor":"1e1842","AccentColor":"c50754","BackgroundColor":"191335","OutlineColor":"3c355d"}]]) },
         ["Jester"] 		    	= { 4, httpService:JSONDecode([[{"FontColor":"ffffff","MainColor":"242424","AccentColor":"db4467","BackgroundColor":"1c1c1c","OutlineColor":"373737"}]]) },
@@ -54,7 +52,6 @@ local ThemeManager = {} do
         self.Library = library
     end
 
-    --// Folders \\--
     function ThemeManager:GetPaths()
         local paths = {}
 
@@ -90,7 +87,6 @@ local ThemeManager = {} do
         self:BuildFolderTree()
     end
     
-    --// Apply, Update theme \\--
     function ThemeManager:ApplyTheme(theme)
         local customThemeData = self:GetCustomTheme(theme)
         local data = customThemeData or self.BuiltInThemes[theme]
@@ -130,7 +126,6 @@ local ThemeManager = {} do
         self.Library:UpdateColorsUsingRegistry()
     end
 
-    --// Get, Load, Save, Delete, Refresh \\--
     function ThemeManager:GetCustomTheme(file)
         local path = self.Folder .. "/themes/" .. file .. ".json"
         if not isfile(path) then
@@ -211,8 +206,6 @@ local ThemeManager = {} do
         for i = 1, #list do
             local file = list[i]
             if file:sub(-5) == ".json" then
-                -- i hate this but it has to be done ...
-
                 local pos = file:find(".json", 1, true)
                 local start = pos
 
@@ -231,7 +224,6 @@ local ThemeManager = {} do
         return out
     end
 
-    --// GUI \\--
     function ThemeManager:CreateThemeManager(groupbox)
         groupbox:AddLabel("Background color"):AddColorPicker("BackgroundColor", { Default = self.Library.Scheme.BackgroundColor })
         groupbox:AddLabel("Main color"):AddColorPicker("MainColor", { Default = self.Library.Scheme.MainColor })
