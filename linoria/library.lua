@@ -3067,8 +3067,7 @@ function Library:CreateWindow(...)
         local TabButton = Library:Create('Frame', {
             BackgroundColor3 = Library.BackgroundColor;
             BorderColor3 = Library.OutlineColor;
-            BorderSizePixel = 1
-            Size = UDim2.new(0, 100, 1, 0),
+            Size = UDim2.new(0, 100, 1, 0), -- Начальная ширина, будет пересчитана
             ZIndex = 2;
             Parent = TabArea;
         });
@@ -3177,12 +3176,13 @@ function Library:CreateWindow(...)
             local TabCount = #TabArea:GetChildren() - 1 -- Минус UIListLayout
             if TabCount == 0 then return end
     
-            -- Учитываем TabPadding и обводки
-            local TabPadding = Config.TabPadding or 0
-            local TotalPadding = TabPadding * (TabCount - 1) -- Общая ширина отступов
-            local BorderWidth = 2 * TabCount -- 2 пикселя на каждую кнопку (обводка слева и справа)
-            local TotalWidth = MainSectionOuter.AbsoluteSize.X - 16 - TotalPadding - BorderWidth -- Вычитаем отступы, TabPadding и обводки
-            local ButtonWidth = math.floor(TotalWidth / TabCount) -- Округляем вниз
+            local TotalWidth = MainSectionOuter.AbsoluteSize.X - 16 -- Вычитаем отступы (8 пикселей с каждой стороны)
+            local ButtonWidth = math.floor(TotalWidth / TabCount) + 1 -- Добавляем 1 пиксель к ширине каждого таба
+    
+            -- Проверяем, чтобы итоговая ширина не превышала доступную
+            if ButtonWidth * TabCount > TotalWidth then
+                ButtonWidth = math.floor(TotalWidth / TabCount) -- Убираем +1, если выпирает
+            end
     
             for _, Button in next, TabArea:GetChildren() do
                 if Button:IsA('Frame') then
@@ -3190,6 +3190,9 @@ function Library:CreateWindow(...)
                 end
             end
         end
+    
+        -- Устанавливаем Padding = 0 для TabArea
+        TabListLayout.Padding = UDim.new(0, 0);
     
         -- Вызов пересчета ширины при создании нового таба
         UpdateTabButtonWidths()
@@ -3220,7 +3223,7 @@ function Library:CreateWindow(...)
         function Tab:SetLayoutOrder(Position)
             TabButton.LayoutOrder = Position;
             TabListLayout:ApplyLayout();
-            UpdateTabButtonWidths() -- Пересчитываем ширину при изменении порядка
+            UpdateTabButtonWidths()
         end;
     
         function Tab:AddGroupbox(Info)
@@ -3421,6 +3424,8 @@ function Library:CreateWindow(...)
                     BackgroundTransparency = 1;
                     Position = UDim2.new(0, 4, 0, 20);
                     Size = UDim2.new(1, -4, 1, -20);
+    
+    
                     ZIndex = 2;
                     Visible = false;
                     Parent = BoxInner;
