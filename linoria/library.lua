@@ -23,13 +23,11 @@ function Fonts:Register_Font(Name, Weight, Style, Asset)
     return getcustomasset(Name .. ".font")
 end
 
--- Регистрируем шрифт ProggyClean
 local ProggyTiny = Font.new(Fonts:Register_Font("ProggyClean", 200, "normal", {
     Id = "ProggyClean.ttf",
     Font = crypt.base64.decode("https://raw.githubusercontent.com/guiddo806/viteck.gg/refs/heads/main/assets/fonts/proggyclean"),
 }))
 
--- Остальные сервисы и инициализация (без изменений)
 local InputService = game:GetService('UserInputService')
 local TextService = game:GetService('TextService')
 local CoreGui = game:GetService('CoreGui')
@@ -55,7 +53,6 @@ local Options = {}
 getgenv().Toggles = Toggles
 getgenv().Options = Options
 
--- Изменяем Library.Font на кастомный шрифт
 local Library = {
     Registry = {};
     RegistryMap = {};
@@ -67,13 +64,12 @@ local Library = {
     OutlineColor = Color3.fromRGB(50, 50, 50);
     RiskColor = Color3.fromRGB(255, 50, 50);
     Black = Color3.new(0, 0, 0);
-    Font = ProggyTiny; -- Заменяем Enum.Font.Code на ProggyTiny
+    Font = ProggyTiny;
     OpenedFrames = {};
     DependencyBoxes = {};
     Signals = {};
     ScreenGui = ScreenGui;
 }
-
 
 local RainbowStep               = 0
 local Hue                       = 0
@@ -170,12 +166,12 @@ function Library:ApplyTextStroke(Inst)
         LineJoinMode = Enum.LineJoinMode.Miter;
         Parent = Inst;
     });
-end;
+end
 
 function Library:CreateLabel(Properties, IsHud)
     local _Instance = Library:Create('TextLabel', {
         BackgroundTransparency = 1;
-        Font = Library.Font;
+        FontFace = Library.Font;
         TextColor3 = Library.FontColor;
         TextSize = 16;
         TextStrokeTransparency = 0;
@@ -188,7 +184,7 @@ function Library:CreateLabel(Properties, IsHud)
     }, IsHud);
 
     return Library:Create(_Instance, Properties);
-end;
+end
 
 function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
@@ -379,7 +375,7 @@ function Library:RemoveFromRegistry(Instance)
         Library.RegistryMap[Instance] = nil;
     end;
 end;
-
+Font
 function Library:UpdateColorsUsingRegistry()
     for Idx, Object in next, Library.Registry do
         for Property, ColorIdx in next, Object.Properties do
@@ -596,7 +592,7 @@ do
             BackgroundTransparency = 1;
             Position = UDim2.new(0, 5, 0, 0);
             Size = UDim2.new(1, -5, 1, 0);
-            Font = Library.Font;
+            FontFace = Library.Font;
             PlaceholderColor3 = Color3.fromRGB(190, 190, 190);
             PlaceholderText = 'Hex color',
             Text = '#FFFFFF',
@@ -619,7 +615,8 @@ do
         local RgbBox = Library:Create(RgbBoxBase.Frame:FindFirstChild('TextBox'), {
             Text = '255, 255, 255',
             PlaceholderText = 'RGB color',
-            TextColor3 = Library.FontColor
+            TextColor3 = Library.FontColor,
+            FontFace = Library.Font;
         });
 
         local TransparencyBoxOuter, TransparencyBoxInner, TransparencyCursor;
@@ -1719,7 +1716,7 @@ do
             Position = UDim2.fromOffset(0, 0),
             Size = UDim2.fromScale(5, 1),
 
-            Font = Library.Font;
+            FontFace = Library.Font;
             PlaceholderColor3 = Color3.fromRGB(190, 190, 190);
             PlaceholderText = Info.Placeholder or '';
 
