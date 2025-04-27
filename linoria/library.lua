@@ -2922,7 +2922,7 @@ function Library:CreateWindow(...)
         Config.AutoShow = Arguments[2] or false;
     end
 
-    if type(Config.Title) ~= 'string' then Config.Title = 'Babilan' end
+    if type(Config.Title) ~= 'string' then Config.Title = 'Babuin' end
     if type(Config.TabPadding) ~= 'number' then Config.TabPadding = 0 end
     if type(Config.MenuFadeTime) ~= 'number' then Config.MenuFadeTime = 0 end
 
@@ -2989,7 +2989,7 @@ function Library:CreateWindow(...)
     local WindowLabel = Library:CreateLabel({
         Position = UDim2.new(0, 0, 0, 0),
         Size = UDim2.new(1, 0, 0, 29), 
-        Text = Config.Title or 'Babilan',
+        Text = Config.Title or 'Funa UI',
         TextXAlignment = Enum.TextXAlignment.Center, 
         ZIndex = 2;
         Parent = Inner;
@@ -3080,7 +3080,7 @@ function Library:CreateWindow(...)
         local TabLine = Library:Create('Frame', {
             BackgroundColor3 = Library.AccentColor;
             BorderSizePixel = 0;
-            Size = UDim2.new(1, 0, 0, 2),
+            Size = UDim2.new(1, 0, 0, 1),
             Position = UDim2.new(0, 0, 0, -2),
             ZIndex = 3;
             Visible = false;
