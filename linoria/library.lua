@@ -2927,7 +2927,7 @@ function Library:CreateWindow(...)
     if type(Config.MenuFadeTime) ~= 'number' then Config.MenuFadeTime = 0 end
 
     if typeof(Config.Position) ~= 'UDim2' then Config.Position = UDim2.fromOffset(175, 50) end
-    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(800, 600) end
+    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(900, 700) end
 
     if Config.Center then
         Config.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -2949,25 +2949,25 @@ function Library:CreateWindow(...)
         Parent = ScreenGui;
     });
 
-    local Shadow = Library:Create('ImageLabel', {
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundTransparency = 1,
-        BorderSizePixel = 0,
-        Image = 'rbxassetid://6015897843',
-        ImageColor3 = Library.AccentColor,
-        Name = '#shadow',
-        Position = UDim2.fromScale(0.5, 0.5),
-        ScaleType = Enum.ScaleType.Slice,
-        Size = UDim2.new(1, 50, 1, 50),
-        SliceCenter = Rect.new(40, 40, 260, 260),
-        SliceScale = 1,
-        ZIndex = 1,
-        Parent = Outer
-    });
-
-    Library:AddToRegistry(Shadow, {
-        ImageColor3 = 'AccentColor'
-    });
+    local Shadow = Instance.new('ImageLabel') do
+        Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+        Shadow.BackgroundTransparency = 1
+        Shadow.BorderSizePixel = 0
+        Shadow.Image = 'rbxassetid://6015897843'
+        Shadow.ImageColor3 = Library.AccentColor
+        Shadow.Name = '#shadow'
+        Shadow.Position = UDim2.fromScale(0.5, 0.5)
+        Shadow.ScaleType = Enum.ScaleType.Slice
+        Shadow.Size = UDim2.new(1, 50, 1, 50)
+        Shadow.SliceCenter = Rect.new(40, 40, 260, 260)
+        Shadow.SliceScale = 1
+        Shadow.ZIndex = 1
+        Shadow.Parent = Outer
+    
+        Library:AddToRegistry(Shadow, {
+            ImageColor3 = 'AccentColor'
+        })
+    end
 
     Library:MakeDraggable(Outer, 25);
 
