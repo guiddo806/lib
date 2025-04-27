@@ -2949,25 +2949,25 @@ function Library:CreateWindow(...)
         Parent = ScreenGui;
     });
 
-    local Shadow = Instance.new('ImageLabel') do
-        Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
-        Shadow.BackgroundTransparency = 1
-        Shadow.BorderSizePixel = 0
-        Shadow.Image = 'rbxassetid://6015897843'
-        Shadow.ImageColor3 = Library.AccentColor
-        Shadow.Name = '#shadow'
-        Shadow.Position = UDim2.fromScale(0.5, 0.5)
-        Shadow.ScaleType = Enum.ScaleType.Slice
-        Shadow.Size = UDim2.new(1, 50, 1, 50)
-        Shadow.SliceCenter = Rect.new(40, 40, 260, 260)
-        Shadow.SliceScale = 1
-        Shadow.ZIndex = 1
-        Shadow.Parent = Outer
-    
-        Library:AddToRegistry(Shadow, {
-            ImageColor3 = 'AccentColor'
-        })
-    end
+    local Shadow = Library:Create('ImageLabel', {
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        Image = 'rbxassetid://6015897843',
+        ImageColor3 = Library.AccentColor,
+        Name = '#shadow',
+        Position = UDim2.fromScale(0.5, 0.5),
+        ScaleType = Enum.ScaleType.Slice,
+        Size = UDim2.new(1, 50, 1, 50),
+        SliceCenter = Rect.new(40, 40, 260, 260),
+        SliceScale = 1,
+        ZIndex = 1,
+        Parent = Outer
+    });
+
+    Library:AddToRegistry(Shadow, {
+        ImageColor3 = 'AccentColor'
+    });
 
     Library:MakeDraggable(Outer, 25);
 
@@ -2990,6 +2990,7 @@ function Library:CreateWindow(...)
         Position = UDim2.new(0, 0, 0, 0),
         Size = UDim2.new(1, 0, 0, 29), 
         Text = Config.Title or 'Funa UI',
+        RichText = true,
         TextXAlignment = Enum.TextXAlignment.Center, 
         ZIndex = 2;
         Parent = Inner;
@@ -3064,16 +3065,10 @@ function Library:CreateWindow(...)
             Tabboxes = {};
         };
     
-        -- Функция для получения тусклого цвета
-        local function GetDarkerColor(color, factor)
-            local h, s, v = Color3.toHSV(color)
-            return Color3.fromHSV(h, s, v * (factor or 0.8))
-        end
-    
         local TabButton = Library:Create('Frame', {
             BackgroundColor3 = Library.BackgroundColor;
             BorderColor3 = Library.OutlineColor;
-            Size = UDim2.new(0, 100, 1, 0), -- Начальная ширина, будет пересчитана
+            Size = UDim2.new(0, 100, 1, 0),
             ZIndex = 2;
             Parent = TabArea;
         });
@@ -3104,9 +3099,6 @@ function Library:CreateWindow(...)
             ZIndex = 2;
             Parent = TabButton;
         });
-    
-        -- Не привязываем TextColor3 к FontColor сразу, чтобы избежать перезаписи
-        -- Цвет будет установлен в ShowTab/HideTab
     
         local Blocker = Library:Create('Frame', {
             BackgroundColor3 = Library.MainColor;
@@ -3180,18 +3172,15 @@ function Library:CreateWindow(...)
             end);
         end;
     
-        -- Функция для пересчета ширины всех кнопок табов
         local function UpdateTabButtonWidths()
-            local TabCount = #TabArea:GetChildren() - 1 -- Минус UIListLayout
+            local TabCount = #TabArea:GetChildren() - 1
             if TabCount == 0 then return end
     
-            local TotalWidth = MainSectionOuter.AbsoluteSize.X - 16 -- Вычитаем отступы (8 пикселей с каждой стороны)
-            local ButtonWidth = math.floor(TotalWidth / TabCount) + 1 -- Добавляем 1 пиксель к ширине каждого таба
-    
-            -- Проверяем, чтобы итоговая ширина не превышала доступную
-            if ButtonWidth * TabCount > TotalWidth then
-                ButtonWidth = math.floor(TotalWidth / TabCount) -- Убираем +1, если выпирает
-            end
+            local TabPadding = Config.TabPadding or 0
+            local TotalPadding = TabPadding * (TabCount - 1)
+            local BorderWidth = 2 * TabCount * 1
+            local TotalWidth = MainSectionOuter.AbsoluteSize.X - 16 - TotalPadding - BorderWidth
+            local ButtonWidth = math.floor(TotalWidth / TabCount)
     
             for _, Button in next, TabArea:GetChildren() do
                 if Button:IsA('Frame') then
@@ -3200,18 +3189,13 @@ function Library:CreateWindow(...)
             end
         end
     
-        -- Устанавливаем Padding = 0 для TabArea
-        TabListLayout.Padding = UDim.new(0, 0);
-    
-        -- Вызов пересчета ширины при создании нового таба
         UpdateTabButtonWidths()
     
-        -- Подписка на изменение размера MainSectionOuter для пересчета ширины
         MainSectionOuter:GetPropertyChangedSignal('AbsoluteSize'):Connect(UpdateTabButtonWidths)
     
         function Tab:ShowTab()
-            for _, OtherTab in next, Window.Tabs do
-                OtherTab:HideTab();
+            for _, Tab in next, Window.Tabs do
+                Tab:HideTab();
             end;
     
             Blocker.BackgroundTransparency = 0;
@@ -3219,7 +3203,6 @@ function Library:CreateWindow(...)
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'MainColor';
             TabFrame.Visible = true;
             TabLine.Visible = true;
-            TabButtonLabel.TextColor3 = GetDarkerColor(Library.AccentColor, 0.8); -- Тусклый AccentColor
         end;
     
         function Tab:HideTab()
@@ -3228,7 +3211,6 @@ function Library:CreateWindow(...)
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
             TabFrame.Visible = false;
             TabLine.Visible = false;
-            TabButtonLabel.TextColor3 = Library.FontColor; -- Возвращаем исходный цвет
         end;
     
         function Tab:SetLayoutOrder(Position)
@@ -3537,10 +3519,8 @@ function Library:CreateWindow(...)
             end;
         end);
     
-        -- Устанавливаем правильный цвет для первого активного таба
         if #TabContainer:GetChildren() == 1 then
             Tab:ShowTab();
-            TabButtonLabel.TextColor3 = GetDarkerColor(Library.AccentColor, 0.8); -- Явно устанавливаем цвет
         end;
     
         Window.Tabs[Name] = Tab;
