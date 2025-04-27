@@ -1,75 +1,46 @@
-local HttpService = game:GetService('HttpService')
+local InputService              = game:GetService('UserInputService');
+local TextService               = game:GetService('TextService');
+local CoreGui                   = game:GetService('CoreGui');
+local Teams                     = game:GetService('Teams');
+local Players                   = game:GetService('Players');
+local RunService                = game:GetService('RunService')
+local TweenService              = game:GetService('TweenService');
+local RenderStepped             = RunService.RenderStepped;
+local LocalPlayer               = Players.LocalPlayer;
+local Mouse                     = LocalPlayer:GetMouse();
 
-local Fonts = {}
-function Fonts:Register_Font(Name, Weight, Style, Asset)
-    if not isfile(Asset.Id) then
-        writefile(Asset.Id, Asset.Font)
-    end
-    if isfile(Name .. ".font") then
-        delfile(Name .. ".font")
-    end
-    local Data = {
-        name = Name,
-        faces = {
-            {
-                name = "Regular",
-                weight = Weight,
-                style = Style,
-                assetId = getcustomasset(Asset.Id),
-            },
-        },
-    }
-    writefile(Name .. ".font", HttpService:JSONEncode(Data))
-    return getcustomasset(Name .. ".font")
-end
+local ProtectGui = protectgui or (syn and syn.protect_gui) or (function() end);
 
-local ProggyTiny = Font.new(Fonts:Register_Font("ProggyClean", 200, "normal", {
-    Id = "ProggyClean.ttf",
-    Font = crypt.base64.decode("https://raw.githubusercontent.com/guiddo806/viteck.gg/refs/heads/main/assets/fonts/proggyclean"),
-}))
+local ScreenGui = Instance.new('ScreenGui');
+ProtectGui(ScreenGui);
 
-local InputService = game:GetService('UserInputService')
-local TextService = game:GetService('TextService')
-local CoreGui = game:GetService('CoreGui')
-local Teams = game:GetService('Teams')
-local Players = game:GetService('Players')
-local RunService = game:GetService('RunService')
-local TweenService = game:GetService('TweenService')
-local RenderStepped = RunService.RenderStepped
-local LocalPlayer = Players.LocalPlayer
-local Mouse = LocalPlayer:GetMouse()
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global;
+ScreenGui.Parent = CoreGui;
 
-local ProtectGui = protectgui or (syn and syn.protect_gui) or (function() end)
+local Toggles                   = {};
+local Options                   = {};
 
-local ScreenGui = Instance.new('ScreenGui')
-ProtectGui(ScreenGui)
-
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
-ScreenGui.Parent = CoreGui
-
-local Toggles = {}
-local Options = {}
-
-getgenv().Toggles = Toggles
-getgenv().Options = Options
+getgenv().Toggles               = Toggles;
+getgenv().Options               = Options;
 
 local Library = {
-    Registry = {};
-    RegistryMap = {};
-    HudRegistry = {};
-    FontColor = Color3.fromRGB(255, 255, 255);
-    MainColor = Color3.fromRGB(28, 28, 28);
-    BackgroundColor = Color3.fromRGB(13, 13, 13);
-    AccentColor = Color3.fromRGB(108, 96, 125);
-    OutlineColor = Color3.fromRGB(50, 50, 50);
-    RiskColor = Color3.fromRGB(255, 50, 50);
-    Black = Color3.new(0, 0, 0);
-    Font = ProggyTiny;
-    OpenedFrames = {};
-    DependencyBoxes = {};
-    Signals = {};
-    ScreenGui = ScreenGui;
-}
+    Registry                    = {};
+    RegistryMap                 = {};
+    HudRegistry                 = {};
+    FontColor                   = Color3.fromRGB(255, 255, 255);
+    MainColor                   = Color3.fromRGB(28, 28, 28);
+    BackgroundColor             = Color3.fromRGB(13, 13, 13);
+    AccentColor                 = Color3.fromRGB(108, 96, 125);
+    OutlineColor                = Color3.fromRGB(50, 50, 50);
+    RiskColor                   = Color3.fromRGB(255, 50, 50),
+    Black                       = Color3.new(0, 0, 0);
+    Font                        = ProggyClean,
+    OpenedFrames                = {};
+    DependencyBoxes             = {};
+
+    Signals                     = {};
+    ScreenGui                   = ScreenGui;
+};
 
 local RainbowStep               = 0
 local Hue                       = 0
@@ -166,12 +137,12 @@ function Library:ApplyTextStroke(Inst)
         LineJoinMode = Enum.LineJoinMode.Miter;
         Parent = Inst;
     });
-end
+end;
 
 function Library:CreateLabel(Properties, IsHud)
     local _Instance = Library:Create('TextLabel', {
         BackgroundTransparency = 1;
-        FontFace = Library.Font;
+        Font = Library.Font;
         TextColor3 = Library.FontColor;
         TextSize = 16;
         TextStrokeTransparency = 0;
@@ -184,7 +155,7 @@ function Library:CreateLabel(Properties, IsHud)
     }, IsHud);
 
     return Library:Create(_Instance, Properties);
-end
+end;
 
 function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
@@ -375,7 +346,7 @@ function Library:RemoveFromRegistry(Instance)
         Library.RegistryMap[Instance] = nil;
     end;
 end;
-Font
+
 function Library:UpdateColorsUsingRegistry()
     for Idx, Object in next, Library.Registry do
         for Property, ColorIdx in next, Object.Properties do
@@ -592,7 +563,7 @@ do
             BackgroundTransparency = 1;
             Position = UDim2.new(0, 5, 0, 0);
             Size = UDim2.new(1, -5, 1, 0);
-            FontFace = Library.Font;
+            Font = Library.Font;
             PlaceholderColor3 = Color3.fromRGB(190, 190, 190);
             PlaceholderText = 'Hex color',
             Text = '#FFFFFF',
@@ -615,8 +586,7 @@ do
         local RgbBox = Library:Create(RgbBoxBase.Frame:FindFirstChild('TextBox'), {
             Text = '255, 255, 255',
             PlaceholderText = 'RGB color',
-            TextColor3 = Library.FontColor,
-            FontFace = Library.Font;
+            TextColor3 = Library.FontColor
         });
 
         local TransparencyBoxOuter, TransparencyBoxInner, TransparencyCursor;
@@ -1716,7 +1686,7 @@ do
             Position = UDim2.fromOffset(0, 0),
             Size = UDim2.fromScale(5, 1),
 
-            FontFace = Library.Font;
+            Font = Library.Font;
             PlaceholderColor3 = Color3.fromRGB(190, 190, 190);
             PlaceholderText = Info.Placeholder or '';
 
