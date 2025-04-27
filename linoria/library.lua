@@ -1,22 +1,4 @@
- local InputService             = game:GetService('UserInputService');
-local TextService               = game:GetService('TextService');
-local CoreGui                   = game:GetService('CoreGui');
-local Teams                     = game:GetService('Teams');
-local Players                   = game:GetService('Players');
-local RunService                = game:GetService('RunService')
-local TweenService              = game:GetService('TweenService');
-local RenderStepped             = RunService.RenderStepped;
-local LocalPlayer               = Players.LocalPlayer;
-local Mouse                     = LocalPlayer:GetMouse();
-local HttpService               = game:GetService('HttpService')
-
-local ProtectGui = protectgui or (syn and syn.protect_gui) or (function() end);
-
-local ScreenGui = Instance.new('ScreenGui');
-ProtectGui(ScreenGui);
-
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global;
-ScreenGui.Parent = CoreGui;
+local HttpService = game:GetService('HttpService')
 
 local Fonts = {}
 function Fonts:Register_Font(Name, Weight, Style, Asset)
@@ -41,36 +23,57 @@ function Fonts:Register_Font(Name, Weight, Style, Asset)
     return getcustomasset(Name .. ".font")
 end
 
-local ProggyClean = Font.new(Fonts:Register_Font("ProggyClean", 200, "normal", {
+-- Регистрируем шрифт ProggyClean
+local ProggyTiny = Font.new(Fonts:Register_Font("ProggyClean", 200, "normal", {
     Id = "ProggyClean.ttf",
     Font = crypt.base64.decode("https://raw.githubusercontent.com/guiddo806/viteck.gg/refs/heads/main/assets/fonts/proggyclean"),
 }))
 
+-- Остальные сервисы и инициализация (без изменений)
+local InputService = game:GetService('UserInputService')
+local TextService = game:GetService('TextService')
+local CoreGui = game:GetService('CoreGui')
+local Teams = game:GetService('Teams')
+local Players = game:GetService('Players')
+local RunService = game:GetService('RunService')
+local TweenService = game:GetService('TweenService')
+local RenderStepped = RunService.RenderStepped
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
 
-local Toggles                   = {};
-local Options                   = {};
+local ProtectGui = protectgui or (syn and syn.protect_gui) or (function() end)
 
-getgenv().Toggles               = Toggles;
-getgenv().Options               = Options;
+local ScreenGui = Instance.new('ScreenGui')
+ProtectGui(ScreenGui)
 
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+ScreenGui.Parent = CoreGui
+
+local Toggles = {}
+local Options = {}
+
+getgenv().Toggles = Toggles
+getgenv().Options = Options
+
+-- Изменяем Library.Font на кастомный шрифт
 local Library = {
-    Registry                    = {};
-    RegistryMap                 = {};
-    HudRegistry                 = {};
-    FontColor                   = Color3.fromRGB(255, 255, 255);
-    MainColor                   = Color3.fromRGB(28, 28, 28);
-    BackgroundColor             = Color3.fromRGB(13, 13, 13);
-    AccentColor                 = Color3.fromRGB(108, 96, 125);
-    OutlineColor                = Color3.fromRGB(50, 50, 50);
-    RiskColor                   = Color3.fromRGB(255, 50, 50),
-    Black                       = Color3.new(0, 0, 0);
-    Font                        = ProggyClean,
-    OpenedFrames                = {};
-    DependencyBoxes             = {};
+    Registry = {};
+    RegistryMap = {};
+    HudRegistry = {};
+    FontColor = Color3.fromRGB(255, 255, 255);
+    MainColor = Color3.fromRGB(28, 28, 28);
+    BackgroundColor = Color3.fromRGB(13, 13, 13);
+    AccentColor = Color3.fromRGB(108, 96, 125);
+    OutlineColor = Color3.fromRGB(50, 50, 50);
+    RiskColor = Color3.fromRGB(255, 50, 50);
+    Black = Color3.new(0, 0, 0);
+    Font = ProggyTiny; -- Заменяем Enum.Font.Code на ProggyTiny
+    OpenedFrames = {};
+    DependencyBoxes = {};
+    Signals = {};
+    ScreenGui = ScreenGui;
+}
 
-    Signals                     = {};
-    ScreenGui                   = ScreenGui;
-};
 
 local RainbowStep               = 0
 local Hue                       = 0
