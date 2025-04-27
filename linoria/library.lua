@@ -8,6 +8,7 @@ local TweenService              = game:GetService('TweenService');
 local RenderStepped             = RunService.RenderStepped;
 local LocalPlayer               = Players.LocalPlayer;
 local Mouse                     = LocalPlayer:GetMouse();
+local HttpService = game:GetService('HttpService')
 
 local ProtectGui = protectgui or (syn and syn.protect_gui) or (function() end);
 
@@ -16,6 +17,35 @@ ProtectGui(ScreenGui);
 
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global;
 ScreenGui.Parent = CoreGui;
+
+local Fonts = {}
+function Fonts:Register_Font(Name, Weight, Style, Asset)
+    if not isfile(Asset.Id) then
+        writefile(Asset.Id, Asset.Font)
+    end
+    if isfile(Name .. ".font") then
+        delfile(Name .. ".font")
+    end
+    local Data = {
+        name = Name,
+        faces = {
+            {
+                name = "Regular",
+                weight = Weight,
+                style = Style,
+                assetId = getcustomasset(Asset.Id),
+            },
+        },
+    }
+    writefile(Name .. ".font", HttpService:JSONEncode(Data))
+    return getcustomasset(Name .. ".font")
+end
+
+local ProggyClean = Font.new(Fonts:Register_Font("ProggyClean", 200, "normal", {
+    Id = "ProggyClean.ttf",
+    Font = crypt.base64.decode("https://raw.githubusercontent.com/guiddo806/viteck.gg/refs/heads/main/assets/fonts/proggyclean"),
+}))
+
 
 local Toggles                   = {};
 local Options                   = {};
@@ -34,7 +64,7 @@ local Library = {
     OutlineColor                = Color3.fromRGB(50, 50, 50);
     RiskColor                   = Color3.fromRGB(255, 50, 50),
     Black                       = Color3.new(0, 0, 0);
-    Font                        = Enum.Font.Code,
+    Font                        = ProggyClean,
     OpenedFrames                = {};
     DependencyBoxes             = {};
 
@@ -302,10 +332,9 @@ function Library:MapValue(Value, MinA, MaxA, MinB, MaxB)
 end;
 
 function Library:GetTextBounds(Text, Font, Size, Resolution)
-    local Bounds = TextService:GetTextSize(Text, Size, Font, Resolution or Vector2.new(1920, 1080))
+    local Bounds = TextService:GetTextSize(Text, Size, Enum.Font.Code, Resolution or Vector2.new(1920, 1080))
     return Bounds.X, Bounds.Y
-end;
-
+end
 function Library:GetDarkerColor(Color)
     local H, S, V = Color3.toHSV(Color);
     return Color3.fromHSV(H, S, V / 1.5);
