@@ -3552,51 +3552,69 @@ function Library:CreateWindow(...)
         ModalElement.Modal = Toggled;
     
         if Toggled then
-            -- A bit scuffed, but if we're going from not toggled -> toggled we want to show the frame immediately so that the fade is visible.
             Outer.Visible = true;
     
             task.spawn(function()
                 local State = InputService.MouseIconEnabled;
     
-                local Cursor = Drawing.new('Triangle');
-                Cursor.Thickness = 1;
-                Cursor.Filled = true;
-                Cursor.Visible = true;
+                -- Основные линии плюсика
+                local HorizontalLine = Drawing.new('Line');
+                HorizontalLine.Thickness = 1;
+                HorizontalLine.Color = Library.AccentColor;
+                HorizontalLine.Visible = true;
     
-                local CursorOutline = Drawing.new('Triangle');
-                CursorOutline.Thickness = 2; -- Увеличена толщина обводки с 1 до 2
-                CursorOutline.Filled = false;
-                CursorOutline.Color = Color3.new(0, 0, 0);
-                CursorOutline.Visible = true;
+                local VerticalLine = Drawing.new('Line');
+                VerticalLine.Thickness = 1;
+                VerticalLine.Color = Library.AccentColor;
+                VerticalLine.Visible = true;
     
-                local PulseTime = 0; -- Для анимации пульсации цвета
+                -- Линии обводки
+                local HorizontalOutline = Drawing.new('Line');
+                HorizontalOutline.Thickness = 3; -- Толще для контраста
+                HorizontalOutline.Color = Color3.new(0, 0, 0);
+                HorizontalOutline.Visible = true;
+    
+                local VerticalOutline = Drawing.new('Line');
+                VerticalOutline.Thickness = 3;
+                VerticalOutline.Color = Color3.new(0, 0, 0);
+                VerticalOutline.Visible = true;
+    
+                local Size = 4; -- Половина длины линии (плюсик 8x8 пикселей)
+                local PulseTime = 0; -- Для анимации пульсации
+    
                 while Toggled and ScreenGui.Parent do
                     InputService.MouseIconEnabled = false;
-    
                     local mPos = InputService:GetMouseLocation();
     
                     -- Пульсация яркости для Library.AccentColor
                     PulseTime = PulseTime + (RunService.RenderStepped:Wait() * 2);
                     local Pulse = math.sin(PulseTime) * 0.1 + 0.9; -- Яркость от 0.8 до 1.0
                     local H, S, V = Color3.toHSV(Library.AccentColor);
-                    Cursor.Color = Color3.fromHSV(H, S, V * Pulse);
+                    local PulsedColor = Color3.fromHSV(H, S, V * Pulse);
+                    HorizontalLine.Color = PulsedColor;
+                    VerticalLine.Color = PulsedColor;
     
-                    -- Увеличенный размер треугольника
-                    Cursor.PointA = Vector2.new(mPos.X, mPos.Y);
-                    Cursor.PointB = Vector2.new(mPos.X + 20, mPos.Y + 8); -- Увеличено с 16,6 до 20,8
-                    Cursor.PointC = Vector2.new(mPos.X + 8, mPos.Y + 20); -- Увеличено с 6,16 до 8,20
+                    -- Позиции линий плюсика
+                    HorizontalLine.From = Vector2.new(mPos.X - Size, mPos.Y);
+                    HorizontalLine.To = Vector2.new(mPos.X + Size, mPos.Y);
+                    VerticalLine.From = Vector2.new(mPos.X, mPos.Y - Size);
+                    VerticalLine.To = Vector2.new(mPos.X, mPos.Y + Size);
     
-                    CursorOutline.PointA = Cursor.PointA;
-                    CursorOutline.PointB = Cursor.PointB;
-                    CursorOutline.PointC = Cursor.PointC;
+                    -- Позиции линий обводки (те же, что у основных)
+                    HorizontalOutline.From = HorizontalLine.From;
+                    HorizontalOutline.To = HorizontalLine.To;
+                    VerticalOutline.From = VerticalLine.From;
+                    VerticalOutline.To = VerticalLine.To;
     
                     RenderStepped:Wait();
                 end;
     
                 InputService.MouseIconEnabled = State;
     
-                Cursor:Remove();
-                CursorOutline:Remove();
+                HorizontalLine:Remove();
+                VerticalLine:Remove();
+                HorizontalOutline:Remove();
+                VerticalOutline:Remove();
             end);
         end;
     
