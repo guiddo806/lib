@@ -2990,6 +2990,7 @@ function Library:CreateWindow(...)
         Position = UDim2.new(0, 0, 0, 0),
         Size = UDim2.new(1, 0, 0, 29), 
         Text = Config.Title or 'Funa UI',
+        RichText = true,
         TextXAlignment = Enum.TextXAlignment.Center, 
         ZIndex = 2;
         Parent = Inner;
@@ -3100,6 +3101,7 @@ function Library:CreateWindow(...)
             Position = UDim2.new(0, 0, 0, 0);
             Size = UDim2.new(1, 0, 1, -1),
             Text = Name;
+            RichText = true,
             ZIndex = 2;
             Parent = TabButton;
         });
@@ -3438,8 +3440,8 @@ function Library:CreateWindow(...)
                 });
     
                 function Tab:Show()
-                    for _, Tab in next, Tabbox.Tabs do
-                        Tab:Hide();
+                    for _, OtherTab in next, Tabbox.Tabs do
+                        OtherTab:Hide();
                     end;
     
                     Container.Visible = true;
@@ -3447,6 +3449,7 @@ function Library:CreateWindow(...)
     
                     Button.BackgroundColor3 = Library.BackgroundColor;
                     Library.RegistryMap[Button].Properties.BackgroundColor3 = 'BackgroundColor';
+                    ButtonLabel.TextColor3 = GetDarkerColor(Library.AccentColor, 0.8); -- Тусклый AccentColor для активной вкладки
     
                     Tab:Resize();
                 end;
@@ -3457,18 +3460,19 @@ function Library:CreateWindow(...)
     
                     Button.BackgroundColor3 = Library.MainColor;
                     Library.RegistryMap[Button].Properties.BackgroundColor3 = 'MainColor';
+                    ButtonLabel.TextColor3 = Library.FontColor; -- Стандартный цвет для неактивной вкладки
                 end;
     
                 function Tab:Resize()
                     local TabCount = 0;
     
-                    for _, Tab in next, Tabbox.Tabs do
+                    for _, OtherTab in next, Tabbox.Tabs do
                         TabCount = TabCount + 1;
                     end;
     
-                    for _, Button in next, TabboxButtons:GetChildren() do
-                        if not Button:IsA('UIListLayout') then
-                            Button.Size = UDim2.new(1 / TabCount, 0, 1, 0);
+                    for _, OtherButton in next, TabboxButtons:GetChildren() do
+                        if not OtherButton:IsA('UIListLayout') then
+                            OtherButton.Size = UDim2.new(1 / TabCount, 0, 1, 0);
                         end;
                     end;
     
@@ -3504,6 +3508,7 @@ function Library:CreateWindow(...)
     
                 if #TabboxButtons:GetChildren() == 2 then
                     Tab:Show();
+                    ButtonLabel.TextColor3 = GetDarkerColor(Library.AccentColor, 0.8); -- Явно устанавливаем цвет для первой активной вкладки
                 end;
     
                 return Tab;
@@ -3536,7 +3541,7 @@ function Library:CreateWindow(...)
         Window.Tabs[Name] = Tab;
         return Tab;
     end;
-
+    
     local ModalElement = Library:Create('TextButton', {
         BackgroundTransparency = 1;
         Size = UDim2.new(0, 0, 0, 0);
