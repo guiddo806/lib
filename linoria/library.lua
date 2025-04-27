@@ -2003,15 +2003,6 @@ do
             BorderColor3 = 'AccentColorDark';
         });
 
-        local HideBorderRight = Library:Create('Frame', {
-            BackgroundColor3 = Library.AccentColor;
-            BorderSizePixel = 0;
-            Position = UDim2.new(1, 0, 0, 0);
-            Size = UDim2.new(0, 1, 1, 0);
-            ZIndex = 8;
-            Parent = Fill;
-        });
-
         Library:AddToRegistry(HideBorderRight, {
             BackgroundColor3 = 'AccentColor';
         });
@@ -2041,7 +2032,7 @@ do
         function Slider:Display()
             local Suffix = Info.Suffix or '';
             if Info.Compact then
-                DisplayLabel.Text = Info.Text .. ': ' .. Slider.Value .. Suffix
+                DisplayLabel.Text = Info.Text .. '/' .. Slider.Value .. Suffix
             elseif Info.HideMax then
                 DisplayLabel.Text = string.format('%s', Slider.Value .. Suffix)
             else
@@ -2054,7 +2045,7 @@ do
         end;
 
         SliderOuter:GetPropertyChangedSignal('AbsoluteSize'):Connect(function()
-            Slider.MaxSize = SliderOuter.AbsoluteSize.X - 2;
+            Slider.MaxSize = SliderOuter.AbsoluteSize.X - 3;
             Slider:Display();
         end);
 
