@@ -3545,59 +3545,64 @@ function Library:CreateWindow(...)
         if Fading then
             return;
         end;
-
+    
         local FadeTime = Config.MenuFadeTime;
         Fading = true;
         Toggled = (not Toggled);
         ModalElement.Modal = Toggled;
-
+    
         if Toggled then
             -- A bit scuffed, but if we're going from not toggled -> toggled we want to show the frame immediately so that the fade is visible.
             Outer.Visible = true;
-
+    
             task.spawn(function()
-                -- TODO: add cursor fade?
                 local State = InputService.MouseIconEnabled;
-
+    
                 local Cursor = Drawing.new('Triangle');
                 Cursor.Thickness = 1;
                 Cursor.Filled = true;
                 Cursor.Visible = true;
-
+    
                 local CursorOutline = Drawing.new('Triangle');
-                CursorOutline.Thickness = 1;
+                CursorOutline.Thickness = 2; -- Увеличена толщина обводки с 1 до 2
                 CursorOutline.Filled = false;
                 CursorOutline.Color = Color3.new(0, 0, 0);
                 CursorOutline.Visible = true;
-
+    
+                local PulseTime = 0; -- Для анимации пульсации цвета
                 while Toggled and ScreenGui.Parent do
                     InputService.MouseIconEnabled = false;
-
+    
                     local mPos = InputService:GetMouseLocation();
-
-                    Cursor.Color = Library.AccentColor;
-
+    
+                    -- Пульсация яркости для Library.AccentColor
+                    PulseTime = PulseTime + (RunService.RenderStepped:Wait() * 2);
+                    local Pulse = math.sin(PulseTime) * 0.1 + 0.9; -- Яркость от 0.8 до 1.0
+                    local H, S, V = Color3.toHSV(Library.AccentColor);
+                    Cursor.Color = Color3.fromHSV(H, S, V * Pulse);
+    
+                    -- Увеличенный размер треугольника
                     Cursor.PointA = Vector2.new(mPos.X, mPos.Y);
-                    Cursor.PointB = Vector2.new(mPos.X + 16, mPos.Y + 6);
-                    Cursor.PointC = Vector2.new(mPos.X + 6, mPos.Y + 16);
-
+                    Cursor.PointB = Vector2.new(mPos.X + 20, mPos.Y + 8); -- Увеличено с 16,6 до 20,8
+                    Cursor.PointC = Vector2.new(mPos.X + 8, mPos.Y + 20); -- Увеличено с 6,16 до 8,20
+    
                     CursorOutline.PointA = Cursor.PointA;
                     CursorOutline.PointB = Cursor.PointB;
                     CursorOutline.PointC = Cursor.PointC;
-
+    
                     RenderStepped:Wait();
                 end;
-
+    
                 InputService.MouseIconEnabled = State;
-
+    
                 Cursor:Remove();
                 CursorOutline:Remove();
             end);
         end;
-
+    
         for _, Desc in next, Outer:GetDescendants() do
             local Properties = {};
-
+    
             if Desc:IsA('ImageLabel') then
                 table.insert(Properties, 'ImageTransparency');
                 table.insert(Properties, 'BackgroundTransparency');
@@ -3608,31 +3613,31 @@ function Library:CreateWindow(...)
             elseif Desc:IsA('UIStroke') then
                 table.insert(Properties, 'Transparency');
             end;
-
+    
             local Cache = TransparencyCache[Desc];
-
+    
             if (not Cache) then
                 Cache = {};
                 TransparencyCache[Desc] = Cache;
             end;
-
+    
             for _, Prop in next, Properties do
                 if not Cache[Prop] then
                     Cache[Prop] = Desc[Prop];
                 end;
-
+    
                 if Cache[Prop] == 1 then
                     continue;
                 end;
-
+    
                 TweenService:Create(Desc, TweenInfo.new(FadeTime, Enum.EasingStyle.Linear), { [Prop] = Toggled and Cache[Prop] or 1 }):Play();
             end;
         end;
-
+    
         task.wait(FadeTime);
-
+    
         Outer.Visible = Toggled;
-
+    
         Fading = false;
     end
 
