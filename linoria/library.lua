@@ -3095,6 +3095,7 @@ function Library:CreateWindow(...)
         local TabButtonLabel = Library:CreateLabel({
             Position = UDim2.new(0, 0, 0, 0);
             Size = UDim2.new(1, 0, 1, -1),
+            RichText = true,
             Text = Name;
             ZIndex = 2;
             Parent = TabButton;
