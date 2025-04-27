@@ -3557,21 +3557,19 @@ function Library:CreateWindow(...)
             task.spawn(function()
                 local State = InputService.MouseIconEnabled;
     
-                -- Основные линии плюсика
                 local HorizontalLine = Drawing.new('Line');
                 HorizontalLine.Thickness = 1;
-                HorizontalLine.Color = Library.AccentColor;
+                HorizontalLine.Color = Color3.new(1, 1, 1);
                 HorizontalLine.Visible = true;
     
                 local VerticalLine = Drawing.new('Line');
                 VerticalLine.Thickness = 1;
-                VerticalLine.Color = Library.AccentColor;
+                VerticalLine.Color = Color3.new(1, 1, 1);
                 VerticalLine.Visible = true;
     
-                -- Линии обводки
                 local HorizontalOutline = Drawing.new('Line');
-                HorizontalOutline.Thickness = 3; -- Толще для контраста
-                HorizontalOutline.Color = Color3.new(0, 0, 0);
+                HorizontalOutline.Thickness = 3;
+                HorizontalOutline.Color = Color3.new(0, 0, 0); 
                 HorizontalOutline.Visible = true;
     
                 local VerticalOutline = Drawing.new('Line');
@@ -3579,28 +3577,24 @@ function Library:CreateWindow(...)
                 VerticalOutline.Color = Color3.new(0, 0, 0);
                 VerticalOutline.Visible = true;
     
-                local Size = 4; -- Половина длины линии (плюсик 8x8 пикселей)
-                local PulseTime = 0; -- Для анимации пульсации
+                local Size = 4.5;
+                local PulseTime = 0;
     
                 while Toggled and ScreenGui.Parent do
                     InputService.MouseIconEnabled = false;
                     local mPos = InputService:GetMouseLocation();
     
-                    -- Пульсация яркости для Library.AccentColor
                     PulseTime = PulseTime + (RunService.RenderStepped:Wait() * 2);
-                    local Pulse = math.sin(PulseTime) * 0.1 + 0.9; -- Яркость от 0.8 до 1.0
-                    local H, S, V = Color3.toHSV(Library.AccentColor);
-                    local PulsedColor = Color3.fromHSV(H, S, V * Pulse);
+                    local Pulse = math.sin(PulseTime) * 0.1 + 0.9;
+                    local PulsedColor = Color3.new(Pulse, Pulse, Pulse);
                     HorizontalLine.Color = PulsedColor;
                     VerticalLine.Color = PulsedColor;
     
-                    -- Позиции линий плюсика
                     HorizontalLine.From = Vector2.new(mPos.X - Size, mPos.Y);
                     HorizontalLine.To = Vector2.new(mPos.X + Size, mPos.Y);
                     VerticalLine.From = Vector2.new(mPos.X, mPos.Y - Size);
                     VerticalLine.To = Vector2.new(mPos.X, mPos.Y + Size);
     
-                    -- Позиции линий обводки (те же, что у основных)
                     HorizontalOutline.From = HorizontalLine.From;
                     HorizontalOutline.To = HorizontalLine.To;
                     VerticalOutline.From = VerticalLine.From;
