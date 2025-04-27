@@ -3541,123 +3541,99 @@ function Library:CreateWindow(...)
     local Toggled = false;
     local Fading = false;
 
-    local Library = {
-        ShowCustomCursor = true, -- Добавляем переменную для управления курсором
-        -- Остальные поля Library остаются без изменений
-    }
-    
     function Library:Toggle()
         if Fading then
-            return
-        end
-    
-        local FadeTime = Config.MenuFadeTime
-        Fading = true
-        Toggled = not Toggled
-        ModalElement.Modal = Toggled
-    
+            return;
+        end;
+
+        local FadeTime = Config.MenuFadeTime;
+        Fading = true;
+        Toggled = (not Toggled);
+        ModalElement.Modal = Toggled;
+
         if Toggled then
-            Outer.Visible = true
-    
+            -- A bit scuffed, but if we're going from not toggled -> toggled we want to show the frame immediately so that the fade is visible.
+            Outer.Visible = true;
+
             task.spawn(function()
-                local OldMouseIconEnabled = InputService.MouseIconEnabled
-    
-                -- Создаем линии для плюсика
-                local HorizontalLine = Drawing.new('Line')
-                HorizontalLine.Thickness = 1
-                HorizontalLine.Color = Color3.new(1, 1, 1) -- Белый, как в obsidian.txt
-                HorizontalLine.Visible = Library.ShowCustomCursor
-    
-                local VerticalLine = Drawing.new('Line')
-                VerticalLine.Thickness = 1
-                VerticalLine.Color = Color3.new(1, 1, 1)
-                VerticalLine.Visible = Library.ShowCustomCursor
-    
-                -- Создаем линии для обводки
-                local HorizontalOutline = Drawing.new('Line')
-                HorizontalOutline.Thickness = 3 -- Обводка толще для контраста
-                HorizontalOutline.Color = Color3.new(0, 0, 0) -- Черный, как в obsidian.txt
-                HorizontalOutline.Visible = Library.ShowCustomCursor
-    
-                local VerticalOutline = Drawing.new('Line')
-                VerticalOutline.Thickness = 3
-                VerticalOutline.Color = Color3.new(0, 0, 0)
-                VerticalOutline.Visible = Library.ShowCustomCursor
-    
-                local Size = 4.5 -- Половина длины линии (9 пикселей, как в obsidian.txt)
-    
+                -- TODO: add cursor fade?
+                local State = InputService.MouseIconEnabled;
+
+                local Cursor = Drawing.new('Triangle');
+                Cursor.Thickness = 1;
+                Cursor.Filled = true;
+                Cursor.Visible = true;
+
+                local CursorOutline = Drawing.new('Triangle');
+                CursorOutline.Thickness = 1;
+                CursorOutline.Filled = false;
+                CursorOutline.Color = Color3.new(0, 0, 0);
+                CursorOutline.Visible = true;
+
                 while Toggled and ScreenGui.Parent do
-                    InputService.MouseIconEnabled = not Library.ShowCustomCursor
-                    local mPos = InputService:GetMouseLocation()
-    
-                    -- Позиции линий плюсика
-                    HorizontalLine.From = Vector2.new(mPos.X - Size, mPos.Y)
-                    HorizontalLine.To = Vector2.new(mPos.X + Size, mPos.Y)
-                    VerticalLine.From = Vector2.new(mPos.X, mPos.Y - Size)
-                    VerticalLine.To = Vector2.new(mPos.X, mPos.Y + Size)
-    
-                    -- Позиции линий обводки
-                    HorizontalOutline.From = HorizontalLine.From
-                    HorizontalOutline.To = HorizontalLine.To
-                    VerticalOutline.From = VerticalLine.From
-                    VerticalOutline.To = VerticalLine.To
-    
-                    -- Обновляем видимость в зависимости от ShowCustomCursor
-                    HorizontalLine.Visible = Library.ShowCustomCursor
-                    VerticalLine.Visible = Library.ShowCustomCursor
-                    HorizontalOutline.Visible = Library.ShowCustomCursor
-                    VerticalOutline.Visible = Library.ShowCustomCursor
-    
-                    RunService.RenderStepped:Wait()
-                end
-    
-                -- Восстанавливаем MouseIconEnabled и удаляем линии
-                InputService.MouseIconEnabled = OldMouseIconEnabled
-                HorizontalLine:Remove()
-                VerticalLine:Remove()
-                HorizontalOutline:Remove()
-                VerticalOutline:Remove()
-            end)
-        end
-    
-        -- Анимация затухания UI
+                    InputService.MouseIconEnabled = false;
+
+                    local mPos = InputService:GetMouseLocation();
+
+                    Cursor.Color = Library.AccentColor;
+
+                    Cursor.PointA = Vector2.new(mPos.X, mPos.Y);
+                    Cursor.PointB = Vector2.new(mPos.X + 16, mPos.Y + 6);
+                    Cursor.PointC = Vector2.new(mPos.X + 6, mPos.Y + 16);
+
+                    CursorOutline.PointA = Cursor.PointA;
+                    CursorOutline.PointB = Cursor.PointB;
+                    CursorOutline.PointC = Cursor.PointC;
+
+                    RenderStepped:Wait();
+                end;
+
+                InputService.MouseIconEnabled = State;
+
+                Cursor:Remove();
+                CursorOutline:Remove();
+            end);
+        end;
+
         for _, Desc in next, Outer:GetDescendants() do
-            local Properties = {}
-    
+            local Properties = {};
+
             if Desc:IsA('ImageLabel') then
-                table.insert(Properties, 'ImageTransparency')
-                table.insert(Properties, 'BackgroundTransparency')
+                table.insert(Properties, 'ImageTransparency');
+                table.insert(Properties, 'BackgroundTransparency');
             elseif Desc:IsA('TextLabel') or Desc:IsA('TextBox') then
-                table.insert(Properties, 'TextTransparency')
+                table.insert(Properties, 'TextTransparency');
             elseif Desc:IsA('Frame') or Desc:IsA('ScrollingFrame') then
-                table.insert(Properties, 'BackgroundTransparency')
+                table.insert(Properties, 'BackgroundTransparency');
             elseif Desc:IsA('UIStroke') then
-                table.insert(Properties, 'Transparency')
-            end
-    
-            local Cache = TransparencyCache[Desc]
-    
-            if not Cache then
-                Cache = {}
-                TransparencyCache[Desc] = Cache
-            end
-    
+                table.insert(Properties, 'Transparency');
+            end;
+
+            local Cache = TransparencyCache[Desc];
+
+            if (not Cache) then
+                Cache = {};
+                TransparencyCache[Desc] = Cache;
+            end;
+
             for _, Prop in next, Properties do
                 if not Cache[Prop] then
-                    Cache[Prop] = Desc[Prop]
-                end
-    
+                    Cache[Prop] = Desc[Prop];
+                end;
+
                 if Cache[Prop] == 1 then
-                    continue
-                end
-    
-                TweenService:Create(Desc, TweenInfo.new(FadeTime, Enum.EasingStyle.Linear), { [Prop] = Toggled and Cache[Prop] or 1 }):Play()
-            end
-        end
-    
-        task.wait(FadeTime)
-        Outer.Visible = Toggled
-        Fading = false
+                    continue;
+                end;
+
+                TweenService:Create(Desc, TweenInfo.new(FadeTime, Enum.EasingStyle.Linear), { [Prop] = Toggled and Cache[Prop] or 1 }):Play();
+            end;
+        end;
+
+        task.wait(FadeTime);
+
+        Outer.Visible = Toggled;
+
+        Fading = false;
     end
 
     Library:GiveSignal(InputService.InputBegan:Connect(function(Input, Processed)
