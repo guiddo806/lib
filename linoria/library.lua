@@ -1965,12 +1965,12 @@ do
         local SliderOuter = Library:Create('Frame', {
             BackgroundColor3 = Color3.new(0, 0, 0);
             BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(1, -4, 0, 13);
+            Size = UDim2.new(1, -4, 0, 15);
             ZIndex = 5;
             Parent = Container;
         });
 
-        Slider.MaxSize = SliderOuter.AbsoluteSize.X - 2;
+        Slider.MaxSize = SliderOuter.AbsoluteSize.X - 3;
 
         Library:AddToRegistry(SliderOuter, {
             BorderColor3 = 'Black';
@@ -2001,6 +2001,15 @@ do
         Library:AddToRegistry(Fill, {
             BackgroundColor3 = 'AccentColor';
             BorderColor3 = 'AccentColorDark';
+        });
+
+        local HideBorderRight = Library:Create('Frame', {
+            BackgroundColor3 = Library.AccentColor;
+            BorderSizePixel = 0;
+            Position = UDim2.new(1, 0, 0, 0);
+            Size = UDim2.new(0, 1, 1, 0);
+            ZIndex = 8;
+            Parent = Fill;
         });
 
         Library:AddToRegistry(HideBorderRight, {
