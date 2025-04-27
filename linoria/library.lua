@@ -3079,6 +3079,20 @@ function Library:CreateWindow(...)
             BorderColor3 = 'OutlineColor';
         });
     
+        local TabHighlight = Library:Create('Frame', {
+            BackgroundColor3 = Library.AccentColor;
+            BorderSizePixel = 0;
+            Size = UDim2.new(1, 0, 0, 2),
+            Position = UDim2.new(0, 0, 0, -2),
+            ZIndex = 3;
+            Visible = false;
+            Parent = TabButton;
+        });
+    
+        Library:AddToRegistry(TabHighlight, {
+            BackgroundColor3 = 'AccentColor';
+        });
+
         local TabButtonLabel = Library:CreateLabel({
             Position = UDim2.new(0, 0, 0, 0);
             Size = UDim2.new(1, 0, 1, -1),
@@ -3110,17 +3124,7 @@ function Library:CreateWindow(...)
             ZIndex = 2;
             Parent = TabContainer;
         });
-    
-        if ImageId then
-            local TabImage = Library:Create('ImageLabel', {
-                BackgroundTransparency = 1;
-                Image = 'rbxassetid://16148205749', 
-                Size = UDim2.new(1, 0, 1, 0), 
-                Position = UDim2.new(0, 0, 0, 0),
-                ZIndex = 2; 
-                Parent = TabFrame;
-            });
-        end;
+
     
         local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
@@ -3179,6 +3183,7 @@ function Library:CreateWindow(...)
             TabButton.BackgroundColor3 = Library.MainColor;
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'MainColor';
             TabFrame.Visible = true;
+            TabHighlight.Visible = true;
         end;
 
         function Tab:HideTab()
@@ -3186,6 +3191,7 @@ function Library:CreateWindow(...)
             TabButton.BackgroundColor3 = Library.BackgroundColor;
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
             TabFrame.Visible = false;
+            TabHighlight.Visible = false;
         end;
 
         function Tab:SetLayoutOrder(Position)
