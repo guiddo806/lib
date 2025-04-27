@@ -3067,6 +3067,7 @@ function Library:CreateWindow(...)
         local TabButton = Library:Create('Frame', {
             BackgroundColor3 = Library.BackgroundColor;
             BorderColor3 = Library.OutlineColor;
+            BorderSizePixel = 0, -- Устанавливаем 0, чтобы границы не добавляли пиксели
             Size = UDim2.new(0, 100, 1, 0), -- Начальная ширина, будет пересчитана
             ZIndex = 2;
             Parent = TabArea;
@@ -3176,8 +3177,11 @@ function Library:CreateWindow(...)
             local TabCount = #TabArea:GetChildren() - 1 -- Минус UIListLayout
             if TabCount == 0 then return end
     
-            local TotalWidth = MainSectionOuter.AbsoluteSize.X - 16 -- Учитываем отступы MainSectionOuter
-            local ButtonWidth = TotalWidth / TabCount
+            -- Учитываем TabPadding из конфигурации окна
+            local TabPadding = Config.TabPadding or 0
+            local TotalPadding = TabPadding * (TabCount - 1) -- Общая ширина отступов
+            local TotalWidth = MainSectionOuter.AbsoluteSize.X - 16 - TotalPadding -- Вычитаем отступы и TabPadding
+            local ButtonWidth = math.floor(TotalWidth / TabCount) -- Округляем вниз, чтобы не выпирать
     
             for _, Button in next, TabArea:GetChildren() do
                 if Button:IsA('Frame') then
