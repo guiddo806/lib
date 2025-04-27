@@ -3064,6 +3064,12 @@ function Library:CreateWindow(...)
             Tabboxes = {};
         };
     
+        -- Функция для получения тусклого цвета
+        local function GetDarkerColor(color, factor)
+            local h, s, v = Color3.toHSV(color)
+            return Color3.fromHSV(h, s, v * (factor or 0.8))
+        end
+    
         local TabButton = Library:Create('Frame', {
             BackgroundColor3 = Library.BackgroundColor;
             BorderColor3 = Library.OutlineColor;
@@ -3095,8 +3101,13 @@ function Library:CreateWindow(...)
             Position = UDim2.new(0, 0, 0, 0);
             Size = UDim2.new(1, 0, 1, -1),
             Text = Name;
+            TextColor3 = Library.FontColor; -- Исходный цвет текста
             ZIndex = 2;
             Parent = TabButton;
+        });
+    
+        Library:AddToRegistry(TabButtonLabel, {
+            TextColor3 = 'FontColor';
         });
     
         local Blocker = Library:Create('Frame', {
@@ -3210,6 +3221,7 @@ function Library:CreateWindow(...)
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'MainColor';
             TabFrame.Visible = true;
             TabLine.Visible = true;
+            TabButtonLabel.TextColor3 = GetDarkerColor(Library.AccentColor, 0.8); -- Тусклый AccentColor
         end;
     
         function Tab:HideTab()
@@ -3218,6 +3230,7 @@ function Library:CreateWindow(...)
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
             TabFrame.Visible = false;
             TabLine.Visible = false;
+            TabButtonLabel.TextColor3 = Library.FontColor; -- Возвращаем исходный цвет
         end;
     
         function Tab:SetLayoutOrder(Position)
@@ -3424,8 +3437,6 @@ function Library:CreateWindow(...)
                     BackgroundTransparency = 1;
                     Position = UDim2.new(0, 4, 0, 20);
                     Size = UDim2.new(1, -4, 1, -20);
-    
-    
                     ZIndex = 2;
                     Visible = false;
                     Parent = BoxInner;
