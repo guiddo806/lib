@@ -1,4 +1,4 @@
-local InputService              = game:GetService('UserInputService');
+ local InputService             = game:GetService('UserInputService');
 local TextService               = game:GetService('TextService');
 local CoreGui                   = game:GetService('CoreGui');
 local Teams                     = game:GetService('Teams');
@@ -8,7 +8,7 @@ local TweenService              = game:GetService('TweenService');
 local RenderStepped             = RunService.RenderStepped;
 local LocalPlayer               = Players.LocalPlayer;
 local Mouse                     = LocalPlayer:GetMouse();
-local HttpService = game:GetService('HttpService')
+local HttpService               = game:GetService('HttpService')
 
 local ProtectGui = protectgui or (syn and syn.protect_gui) or (function() end);
 
