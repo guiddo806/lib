@@ -2949,25 +2949,25 @@ function Library:CreateWindow(...)
         Parent = ScreenGui;
     });
 
-    local Shadow = Instance.new('ImageLabel') do
-        Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
-        Shadow.BackgroundTransparency = 1
-        Shadow.BorderSizePixel = 0
-        Shadow.Image = 'rbxassetid://6015897843'
-        Shadow.ImageColor3 = Library.AccentColor
-        Shadow.Name = '#shadow'
-        Shadow.Position = UDim2.fromScale(0.5, 0.5)
-        Shadow.ScaleType = Enum.ScaleType.Slice
-        Shadow.Size = UDim2.new(1, 50, 1, 50)
-        Shadow.SliceCenter = Rect.new(40, 40, 260, 260)
-        Shadow.SliceScale = 1
-        Shadow.ZIndex = 1
-        Shadow.Parent = Outer
-    
-        Library:AddToRegistry(Shadow, {
-            ImageColor3 = 'AccentColor'
-        })
-    end
+    local Shadow = Library:Create('ImageLabel', {
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        Image = 'rbxassetid://6015897843',
+        ImageColor3 = Library.AccentColor,
+        Name = '#shadow',
+        Position = UDim2.fromScale(0.5, 0.5),
+        ScaleType = Enum.ScaleType.Slice,
+        Size = UDim2.new(1, 50, 1, 50),
+        SliceCenter = Rect.new(40, 40, 260, 260),
+        SliceScale = 1,
+        ZIndex = 1,
+        Parent = Outer
+    });
+
+    Library:AddToRegistry(Shadow, {
+        ImageColor3 = 'AccentColor'
+    });
 
     Library:MakeDraggable(Outer, 25);
 
@@ -3449,7 +3449,7 @@ function Library:CreateWindow(...)
     
                     Button.BackgroundColor3 = Library.BackgroundColor;
                     Library.RegistryMap[Button].Properties.BackgroundColor3 = 'BackgroundColor';
-                    ButtonLabel.TextColor3 = GetDarkerColor(Library.AccentColor, 0.8); -- Тусклый AccentColor для активной вкладки
+                    ButtonLabel.TextColor3 = GetDarkerColor(Library.AccentColor, 0.8);
     
                     Tab:Resize();
                 end;
@@ -3460,7 +3460,7 @@ function Library:CreateWindow(...)
     
                     Button.BackgroundColor3 = Library.MainColor;
                     Library.RegistryMap[Button].Properties.BackgroundColor3 = 'MainColor';
-                    ButtonLabel.TextColor3 = Library.FontColor; -- Стандартный цвет для неактивной вкладки
+                    ButtonLabel.TextColor3 = Library.FontColor;
                 end;
     
                 function Tab:Resize()
@@ -3508,7 +3508,7 @@ function Library:CreateWindow(...)
     
                 if #TabboxButtons:GetChildren() == 2 then
                     Tab:Show();
-                    ButtonLabel.TextColor3 = GetDarkerColor(Library.AccentColor, 0.8); -- Явно устанавливаем цвет для первой активной вкладки
+                    ButtonLabel.TextColor3 = GetDarkerColor(Library.AccentColor, 0.8);
                 end;
     
                 return Tab;
@@ -3541,7 +3541,7 @@ function Library:CreateWindow(...)
         Window.Tabs[Name] = Tab;
         return Tab;
     end;
-    
+
     local ModalElement = Library:Create('TextButton', {
         BackgroundTransparency = 1;
         Size = UDim2.new(0, 0, 0, 0);
