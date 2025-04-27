@@ -3207,7 +3207,7 @@ function Library:CreateWindow(...)
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
             TabFrame.Visible = false;
             TabLine.Visible = false;
-            TabButtonLabel.TextColor3 = Library.FontColor;
+            TabButtonLabel.TextColor3 = GetDarkerColor(Library.AccentColor, 0.8);
         end;
     
         function Tab:SetLayoutOrder(Position)
