@@ -3079,17 +3079,17 @@ function Library:CreateWindow(...)
             BorderColor3 = 'OutlineColor';
         });
     
-        local TabHighlight = Library:Create('Frame', {
+        local TabLine = Library:Create('Frame', {
             BackgroundColor3 = Library.AccentColor;
             BorderSizePixel = 0;
-            Size = UDim2.new(1, 0, 0, 2),
+            Size = UDim2.new(1, 0, 0, 1),
             Position = UDim2.new(0, 0, 0, -2),
             ZIndex = 3;
             Visible = false;
             Parent = TabButton;
         });
     
-        Library:AddToRegistry(TabHighlight, {
+        Library:AddToRegistry(TabLine, {
             BackgroundColor3 = 'AccentColor';
         });
 
@@ -3183,7 +3183,7 @@ function Library:CreateWindow(...)
             TabButton.BackgroundColor3 = Library.MainColor;
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'MainColor';
             TabFrame.Visible = true;
-            TabHighlight.Visible = true;
+            TabLine.Visible = true;
         end;
 
         function Tab:HideTab()
@@ -3191,7 +3191,7 @@ function Library:CreateWindow(...)
             TabButton.BackgroundColor3 = Library.BackgroundColor;
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
             TabFrame.Visible = false;
-            TabHighlight.Visible = false;
+            TabLine.Visible = false;
         end;
 
         function Tab:SetLayoutOrder(Position)
