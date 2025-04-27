@@ -1949,7 +1949,7 @@ do
                 Text = Info.Text;
                 TextXAlignment = Enum.TextXAlignment.Left;
                 TextYAlignment = Enum.TextYAlignment.Bottom;
-                ZIndex = 5;
+                ZIndex = 8;
                 Parent = Container;
             });
     
@@ -2024,7 +2024,7 @@ do
             local Suffix = Info.Suffix or '';
     
             if Info.Compact then
-                DisplayLabel.Text = Info.Text .. ': ' .. Slider.Value .. Suffix
+                DisplayLabel.Text = Info.Text .. '/' .. Slider.Value .. Suffix
             elseif Info.Suffix then
                 DisplayLabel.Text = Slider.Value .. Suffix
             else
