@@ -2927,7 +2927,7 @@ function Library:CreateWindow(...)
     if type(Config.MenuFadeTime) ~= 'number' then Config.MenuFadeTime = 0 end
 
     if typeof(Config.Position) ~= 'UDim2' then Config.Position = UDim2.fromOffset(175, 50) end
-    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(900, 700) end
+    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(800, 600) end
 
     if Config.Center then
         Config.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -3064,6 +3064,11 @@ function Library:CreateWindow(...)
             Tabboxes = {};
         };
     
+        local function GetDarkerColor(color, factor)
+            local h, s, v = Color3.toHSV(color)
+            return Color3.fromHSV(h, s, v * (factor or 0.8))
+        end
+    
         local TabButton = Library:Create('Frame', {
             BackgroundColor3 = Library.BackgroundColor;
             BorderColor3 = Library.OutlineColor;
@@ -3175,11 +3180,12 @@ function Library:CreateWindow(...)
             local TabCount = #TabArea:GetChildren() - 1
             if TabCount == 0 then return end
     
-            local TabPadding = Config.TabPadding or 0
-            local TotalPadding = TabPadding * (TabCount - 1)
-            local BorderWidth = 2 * TabCount * 1
-            local TotalWidth = MainSectionOuter.AbsoluteSize.X - 16 - TotalPadding - BorderWidth
-            local ButtonWidth = math.floor(TotalWidth / TabCount)
+            local TotalWidth = MainSectionOuter.AbsoluteSize.X - 16
+            local ButtonWidth = math.floor(TotalWidth / TabCount) + 1
+    
+            if ButtonWidth * TabCount > TotalWidth then
+                ButtonWidth = math.floor(TotalWidth / TabCount)
+            end
     
             for _, Button in next, TabArea:GetChildren() do
                 if Button:IsA('Frame') then
@@ -3188,13 +3194,15 @@ function Library:CreateWindow(...)
             end
         end
     
+        TabListLayout.Padding = UDim.new(0, 0);
+    
         UpdateTabButtonWidths()
     
         MainSectionOuter:GetPropertyChangedSignal('AbsoluteSize'):Connect(UpdateTabButtonWidths)
     
         function Tab:ShowTab()
-            for _, Tab in next, Window.Tabs do
-                Tab:HideTab();
+            for _, OtherTab in next, Window.Tabs do
+                OtherTab:HideTab();
             end;
     
             Blocker.BackgroundTransparency = 0;
@@ -3202,6 +3210,7 @@ function Library:CreateWindow(...)
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'MainColor';
             TabFrame.Visible = true;
             TabLine.Visible = true;
+            TabButtonLabel.TextColor3 = GetDarkerColor(Library.AccentColor, 0.8);
         end;
     
         function Tab:HideTab()
@@ -3210,6 +3219,7 @@ function Library:CreateWindow(...)
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
             TabFrame.Visible = false;
             TabLine.Visible = false;
+            TabButtonLabel.TextColor3 = Library.FontColor;
         end;
     
         function Tab:SetLayoutOrder(Position)
@@ -3520,6 +3530,7 @@ function Library:CreateWindow(...)
     
         if #TabContainer:GetChildren() == 1 then
             Tab:ShowTab();
+            TabButtonLabel.TextColor3 = GetDarkerColor(Library.AccentColor, 0.8);
         end;
     
         Window.Tabs[Name] = Tab;
