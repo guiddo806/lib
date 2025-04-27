@@ -3101,14 +3101,12 @@ function Library:CreateWindow(...)
             Position = UDim2.new(0, 0, 0, 0);
             Size = UDim2.new(1, 0, 1, -1),
             Text = Name;
-            TextColor3 = Library.FontColor; -- Исходный цвет текста
             ZIndex = 2;
             Parent = TabButton;
         });
     
-        Library:AddToRegistry(TabButtonLabel, {
-            TextColor3 = 'FontColor';
-        });
+        -- Не привязываем TextColor3 к FontColor сразу, чтобы избежать перезаписи
+        -- Цвет будет установлен в ShowTab/HideTab
     
         local Blocker = Library:Create('Frame', {
             BackgroundColor3 = Library.MainColor;
@@ -3212,8 +3210,8 @@ function Library:CreateWindow(...)
         MainSectionOuter:GetPropertyChangedSignal('AbsoluteSize'):Connect(UpdateTabButtonWidths)
     
         function Tab:ShowTab()
-            for _, Tab in next, Window.Tabs do
-                Tab:HideTab();
+            for _, OtherTab in next, Window.Tabs do
+                OtherTab:HideTab();
             end;
     
             Blocker.BackgroundTransparency = 0;
@@ -3539,8 +3537,10 @@ function Library:CreateWindow(...)
             end;
         end);
     
+        -- Устанавливаем правильный цвет для первого активного таба
         if #TabContainer:GetChildren() == 1 then
             Tab:ShowTab();
+            TabButtonLabel.TextColor3 = GetDarkerColor(Library.AccentColor, 0.8); -- Явно устанавливаем цвет
         end;
     
         Window.Tabs[Name] = Tab;
