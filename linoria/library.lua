@@ -3051,15 +3051,10 @@ function Library:CreateWindow(...)
             Tabboxes = {};
         };
     
-        local function GetDarkerColor(color, factor)
-            local h, s, v = Color3.toHSV(color)
-            return Color3.fromHSV(h, s, v * (factor or 0.8))
-        end
-    
         local TabButton = Library:Create('Frame', {
             BackgroundColor3 = Library.BackgroundColor;
             BorderColor3 = Library.OutlineColor;
-            Size = UDim2.new(0, 100, 1, 0),
+            Size = UDim2.new(0, 100, 1, 0), -- Начальная ширина, будет пересчитана
             ZIndex = 2;
             Parent = TabArea;
         });
@@ -3087,7 +3082,6 @@ function Library:CreateWindow(...)
             Position = UDim2.new(0, 0, 0, 0);
             Size = UDim2.new(1, 0, 1, -1),
             Text = Name;
-            RichText = true,
             ZIndex = 2;
             Parent = TabButton;
         });
@@ -3164,15 +3158,17 @@ function Library:CreateWindow(...)
             end);
         end;
     
+        -- Функция для пересчета ширины всех кнопок табов
         local function UpdateTabButtonWidths()
-            local TabCount = #TabArea:GetChildren() - 1
+            local TabCount = #TabArea:GetChildren() - 1 -- Минус UIListLayout
             if TabCount == 0 then return end
     
-            local TotalWidth = MainSectionOuter.AbsoluteSize.X - 16
-            local ButtonWidth = math.floor(TotalWidth / TabCount) + 1
+            local TotalWidth = MainSectionOuter.AbsoluteSize.X - 16 -- Вычитаем отступы (8 пикселей с каждой стороны)
+            local ButtonWidth = math.floor(TotalWidth / TabCount) + 1 -- Добавляем 1 пиксель к ширине каждого таба
     
+            -- Проверяем, чтобы итоговая ширина не превышала доступную
             if ButtonWidth * TabCount > TotalWidth then
-                ButtonWidth = math.floor(TotalWidth / TabCount)
+                ButtonWidth = math.floor(TotalWidth / TabCount) -- Убираем +1, если выпирает
             end
     
             for _, Button in next, TabArea:GetChildren() do
@@ -3182,15 +3178,18 @@ function Library:CreateWindow(...)
             end
         end
     
+        -- Устанавливаем Padding = 0 для TabArea
         TabListLayout.Padding = UDim.new(0, 0);
     
+        -- Вызов пересчета ширины при создании нового таба
         UpdateTabButtonWidths()
     
+        -- Подписка на изменение размера MainSectionOuter для пересчета ширины
         MainSectionOuter:GetPropertyChangedSignal('AbsoluteSize'):Connect(UpdateTabButtonWidths)
     
         function Tab:ShowTab()
-            for _, OtherTab in next, Window.Tabs do
-                OtherTab:HideTab();
+            for _, Tab in next, Window.Tabs do
+                Tab:HideTab();
             end;
     
             Blocker.BackgroundTransparency = 0;
@@ -3198,7 +3197,6 @@ function Library:CreateWindow(...)
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'MainColor';
             TabFrame.Visible = true;
             TabLine.Visible = true;
-            TabButtonLabel.TextColor3 = GetDarkerColor(Library.AccentColor, 0.8);
         end;
     
         function Tab:HideTab()
@@ -3207,7 +3205,6 @@ function Library:CreateWindow(...)
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
             TabFrame.Visible = false;
             TabLine.Visible = false;
-            TabButtonLabel.TextColor3 = Library.FontColor;
         end;
     
         function Tab:SetLayoutOrder(Position)
@@ -3414,6 +3411,8 @@ function Library:CreateWindow(...)
                     BackgroundTransparency = 1;
                     Position = UDim2.new(0, 4, 0, 20);
                     Size = UDim2.new(1, -4, 1, -20);
+    
+    
                     ZIndex = 2;
                     Visible = false;
                     Parent = BoxInner;
@@ -3426,8 +3425,8 @@ function Library:CreateWindow(...)
                 });
     
                 function Tab:Show()
-                    for _, OtherTab in next, Tabbox.Tabs do
-                        OtherTab:Hide();
+                    for _, Tab in next, Tabbox.Tabs do
+                        Tab:Hide();
                     end;
     
                     Container.Visible = true;
@@ -3435,7 +3434,6 @@ function Library:CreateWindow(...)
     
                     Button.BackgroundColor3 = Library.BackgroundColor;
                     Library.RegistryMap[Button].Properties.BackgroundColor3 = 'BackgroundColor';
-                    ButtonLabel.TextColor3 = GetDarkerColor(Library.AccentColor, 0.8);
     
                     Tab:Resize();
                 end;
@@ -3446,19 +3444,18 @@ function Library:CreateWindow(...)
     
                     Button.BackgroundColor3 = Library.MainColor;
                     Library.RegistryMap[Button].Properties.BackgroundColor3 = 'MainColor';
-                    ButtonLabel.TextColor3 = Library.FontColor;
                 end;
     
                 function Tab:Resize()
                     local TabCount = 0;
     
-                    for _, OtherTab in next, Tabbox.Tabs do
+                    for _, Tab in next, Tabbox.Tabs do
                         TabCount = TabCount + 1;
                     end;
     
-                    for _, OtherButton in next, TabboxButtons:GetChildren() do
-                        if not OtherButton:IsA('UIListLayout') then
-                            OtherButton.Size = UDim2.new(1 / TabCount, 0, 1, 0);
+                    for _, Button in next, TabboxButtons:GetChildren() do
+                        if not Button:IsA('UIListLayout') then
+                            Button.Size = UDim2.new(1 / TabCount, 0, 1, 0);
                         end;
                     end;
     
@@ -3494,7 +3491,6 @@ function Library:CreateWindow(...)
     
                 if #TabboxButtons:GetChildren() == 2 then
                     Tab:Show();
-                    ButtonLabel.TextColor3 = GetDarkerColor(Library.AccentColor, 0.8);
                 end;
     
                 return Tab;
@@ -3521,7 +3517,6 @@ function Library:CreateWindow(...)
     
         if #TabContainer:GetChildren() == 1 then
             Tab:ShowTab();
-            TabButtonLabel.TextColor3 = GetDarkerColor(Library.AccentColor, 0.8);
         end;
     
         Window.Tabs[Name] = Tab;
