@@ -3153,9 +3153,9 @@ function Library:CreateWindow(...)
         });
     
         for _, Side in next, { LeftSide, RightSide } do
-            Side:WaitForChild('UIListLayout'):GetPropertyChangedSignal('AbsoluteContentSize'):Connect(function()
+            Side:WaitForChild('UIListLayout'):GetPropertyChangedSignal('AbsoluteContentSize'):Connect function()
                 Side.CanvasSize = UDim2.fromOffset(0, Side.UIListLayout.AbsoluteContentSize.Y);
-            end);
+            end;
         end;
     
         local function UpdateTabButtonWidths()
@@ -3165,36 +3165,46 @@ function Library:CreateWindow(...)
             local TotalWidth = MainSectionOuter.AbsoluteSize.X - 16
             if TotalWidth <= 0 then return end
     
-            local ButtonWidth = math.floor(TotalWidth / TabCount)
-            local TotalAssignedWidth = ButtonWidth * (TabCount - 1)
-            local LastButtonWidth = TotalWidth - TotalAssignedWidth
+            -- Точная ширина одной кнопки (дробная)
+            local ExactButtonWidth = TotalWidth / TabCount
     
+            -- Минимальная ширина кнопки
             local MinButtonWidth = 50
-            if ButtonWidth < MinButtonWidth then
-                ButtonWidth = MinButtonWidth
-                LastButtonWidth = math.max(MinButtonWidth, LastButtonWidth)
+            if ExactButtonWidth < MinButtonWidth then
+                ExactButtonWidth = MinButtonWidth
             end
     
-            if (ButtonWidth * (TabCount - 1) + LastButtonWidth) > TotalWidth then
-                LastButtonWidth = TotalWidth - (ButtonWidth * (TabCount - 1))
-            end
-    
-            local Index = 1
+            -- Рассчитываем ширину для каждой кнопки
+            local Buttons = {}
+            local CurrentTotalWidth = 0
             for _, Button in next, TabArea:GetChildren() do
                 if Button:IsA('Frame') then
-                    if Index == TabCount then
-                        Button.Size = UDim2.new(0, LastButtonWidth, 1, 0)
-                    else
-                        Button.Size = UDim2.new(0, ButtonWidth, 1, 0)
-                    end
-                    Index = Index + 1
+                    table.insert(Buttons, Button)
                 end
             end
     
-            local CurrentTotalWidth = (ButtonWidth * (TabCount - 1)) + LastButtonWidth
-            if CurrentTotalWidth > TotalWidth then
-                LastButtonWidth = LastButtonWidth - (CurrentTotalWidth - TotalWidth)
-                TabArea:GetChildren()[TabCount].Size = UDim2.new(0, LastButtonWidth, 1, 0)
+            for i = 1, TabCount do
+                if i == TabCount then
+                    -- Последняя кнопка получает оставшуюся ширину
+                    local RemainingWidth = TotalWidth - CurrentTotalWidth
+                    Buttons[i].Size = UDim2.new(0, math.max(MinButtonWidth, RemainingWidth), 1, 0)
+                else
+                    -- Остальные кнопки получают точную ширину
+                    local ButtonWidth = math.floor(ExactButtonWidth)
+                    Buttons[i].Size = UDim2.new(0, ButtonWidth, 1, 0)
+                    CurrentTotalWidth = CurrentTotalWidth + ButtonWidth
+                end
+            end
+    
+            -- Финальная проверка: корректируем последнюю кнопку, если есть расхождение
+            local FinalTotalWidth = 0
+            for _, Button in next, Buttons do
+                FinalTotalWidth = FinalTotalWidth + Button.Size.X.Offset
+            end
+            if FinalTotalWidth ~= TotalWidth then
+                local Diff = TotalWidth - FinalTotalWidth
+                local LastButton = Buttons[TabCount]
+                LastButton.Size = UDim2.new(0, LastButton.Size.X.Offset + Diff, 1, 0)
             end
         end
     
