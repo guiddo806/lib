@@ -3519,8 +3519,6 @@ function Library:CreateWindow(...)
             end;
         end);
     
-        UpdateTabButtonWidths()
-
         if #TabContainer:GetChildren() == 1 then
             Tab:ShowTab();
             TabButtonLabel.TextColor3 = GetDarkerColor(Library.AccentColor, 0.8);
