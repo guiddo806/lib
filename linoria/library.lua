@@ -1832,7 +1832,7 @@ do
         });
     
         local ToggleLabel = Library:CreateLabel({
-            Size = UDim2.new(0, 340, 1, 0);
+            Size = UDim2.new(0, 337, 1, 0);
             Position = UDim2.new(1, 7, 0, 0);
             TextSize = 14;
             Text = Info.Text;
@@ -1855,11 +1855,6 @@ do
             ZIndex = 8;
             Parent = ToggleOuter;
         });
-    
-
-
-
-
 
         function Toggle:UpdateColors()
             Toggle:Display();
@@ -2023,11 +2018,6 @@ do
             ZIndex = 9;
             Parent = SliderInner;
         });
-    
-
-
-
-
 
         if type(Info.Tooltip) == 'string' then
             Library:AddToolTip(Info.Tooltip, SliderOuter)
