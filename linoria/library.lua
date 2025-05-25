@@ -2990,6 +2990,7 @@ function Library:CreateWindow(...)
     local MainSectionOuter = Library:Create('Frame', {
         BackgroundColor3 = Library.BackgroundColor;
         BorderColor3 = Library.OutlineColor;
+        BorderSizePixel = 1;
         Position = UDim2.new(0, 8, 0, 25);
         Size = UDim2.new(1, -16, 1, -33);
         ZIndex = 2;
@@ -3121,17 +3122,6 @@ function Library:CreateWindow(...)
             Parent = TabContainer;
         });
 
-
-
-
-
-
-
-
-
-
-
-
         local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
@@ -3183,7 +3173,8 @@ function Library:CreateWindow(...)
         local function UpdateTabButtonWidths()
             local TabCount = #TabArea:GetChildren() - 1
             if TabCount == 0 then return end
-    
+
+            local BorderWidth = MainSectionOuter.BorderSizePixel * 2
             local TotalWidth = MainSectionOuter.AbsoluteSize.X - 16
             local ButtonWidth = math.floor(TotalWidth / TabCount) + 1
     
