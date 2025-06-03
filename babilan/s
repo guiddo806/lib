@@ -12,7 +12,8 @@ end
 local function get_config(library)
     local Config = ""
     for Index, Value in pairs(library.flags) do
-        if Index ~= "ConfigConfig_List" and Index ~= "ConfigConfig_Load" and Index ~= "ConfigConfig_Save" then
+        if Index ~= "ConfigConfig_List" and Index ~= "ConfigConfig_Load" and 
+           Index ~= "ConfigConfig_Save" then
             local Value2 = Value
             local Final = ""
             --
@@ -25,6 +26,12 @@ local function get_config(library)
             elseif typeof(Value2) == "table" and Value2.Mode then
                 local Values = Value.current
                 Final = ("key(%s,%s,%s)"):format(Values[1] or "nil", Values[2] or "nil", Value.Mode)
+            elseif typeof(Value2) == "EnumItem" then
+                if Value2 and Value2.EnumType and Value2.Name then
+                    Final = ("enum(%s,%s)"):format(tostring(Value2.EnumType), tostring(Value2.Name))
+                else
+                    Final = "enum(invalid)"
+                end
             elseif Value2 ~= nil then
                 if typeof(Value2) == "boolean" then
                     Value2 = ("bool(%s)"):format(tostring(Value2))
@@ -67,6 +74,18 @@ local function load_config(library, Config)
                     Table4[2] = nil
                 end
                 Value = Table4
+            elseif Value:sub(1, 4) == "enum" then
+                local Table4 = string.split(Value:sub(6, #Value - 1), ",")
+                if #Table4 == 2 then
+                    local enumTypeName = Table4[1]
+                    local enumName = Table4[2]
+                    local enumType = Enum[enumTypeName]
+                    if enumType then
+                        Value = enumType[enumName] or tostring(enumName)
+                    else
+                        Value = tostring(enumName)
+                    end
+                end
             elseif Value:sub(1, 4) == "bool" then
                 local Bool = Value:sub(6, #Value - 1)
                 Value = Bool == "true"
@@ -86,9 +105,9 @@ local function load_config(library, Config)
     for i, v in pairs(Table2) do
         if library.flags[i] then
             if typeof(library.flags[i]) == "table" then
-                library.flags[i]:Set(v)
+                library.flags[i]:Set(tostring(v))
             else
-                library.flags[i](v)
+                library.flags[i](tostring(v))
             end
         end
     end
@@ -163,7 +182,7 @@ function config_manager:build_configs(library, section)
         Name = "Config Name",
         Placeholder = "Enter config name",
         Callback = function(value)
-            library.flags["ConfigName"] = value
+            library.flags["ConfigName"] = tostring(value or "")
         end,
         Flag = "ConfigName"
     })
@@ -172,7 +191,7 @@ function config_manager:build_configs(library, section)
         Name = "Select Config",
         Options = get_config_list(),
         Callback = function(value)
-            library.flags["SelectedConfig"] = value
+            library.flags["SelectedConfig"] = tostring(value or "")
         end,
         Flag = "SelectedConfig"
     })
@@ -188,7 +207,7 @@ function config_manager:build_configs(library, section)
     section:button({
         Name = "Save Config",
         Callback = function()
-            local name = library.flags["ConfigName"]
+            local name = tostring(library.flags["ConfigName"] or "")
             if save_config(library, name) then
                 config_dropdown:Refresh(get_config_list())
                 library:notification({message = "Config '" .. name .. "' saved", duration = 3, color = library.accent})
@@ -201,8 +220,8 @@ function config_manager:build_configs(library, section)
     section:button({
         Name = "Load Config",
         Callback = function()
-            local name = library.flags["SelectedConfig"]
-            if name then
+            local name = tostring(library.flags["SelectedConfig"] or "")
+            if name and name ~= "" then
                 if load_config_file(library, name) then
                     library:notification({message = "Config '" .. name .. "' loaded", duration = 3, color = library.accent})
                 else
@@ -217,8 +236,8 @@ function config_manager:build_configs(library, section)
     section:button({
         Name = "Delete Config",
         Callback = function()
-            local name = library.flags["SelectedConfig"]
-            if name then
+            local name = tostring(library.flags["SelectedConfig"] or "")
+            if name and name ~= "" then
                 if delete_config(name) then
                     config_dropdown:Refresh(get_config_list())
                     library.flags["SelectedConfig"] = nil
@@ -235,8 +254,8 @@ function config_manager:build_configs(library, section)
     section:button({
         Name = "Set as Autoload",
         Callback = function()
-            local name = library.flags["SelectedConfig"]
-            if name then
+            local name = tostring(library.flags["SelectedConfig"] or "")
+            if name and name ~= "" then
                 if set_autoload(library, name) then
                     library:notification({message = "Config '" .. name .. "' set as autoload", duration = 3, color = library.accent})
                 else
