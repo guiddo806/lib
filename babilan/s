@@ -1,4 +1,3 @@
--- config_manager.lua
 local config_manager = {}
 
 function config_manager:build_configs(library, section)
