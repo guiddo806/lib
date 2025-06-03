@@ -31,7 +31,6 @@ local function get_config(library)
                     print("Debug - EnumItem:", Index, Value2, "->", Final)
                 else
                     Final = "enum(invalid)"
-                    print("Debug - Invalid EnumItem:", Index, Value2)
                 end
             elseif Value2 ~= nil then
                 if typeof(Value2) == "boolean" then
@@ -87,7 +86,6 @@ local function load_config(library, Config)
                         Value = enumName
                     end
                 end
-                print("Debug - Enum Load:", Table3[1], Value)
             elseif Value:sub(1, 4) == "bool" then
                 local Bool = Value:sub(6, #Value - 1)
                 Value = Bool == "true"
