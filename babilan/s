@@ -1,3 +1,4 @@
+-- config_manager.lua
 local config_manager = {}
 
 function config_manager:build_configs(library, section)
@@ -7,7 +8,7 @@ function config_manager:build_configs(library, section)
             local files = listfiles("viteck/configs")
             for _, file in pairs(files) do
                 local normalized_file = file:gsub("\\", "/")
-                local name = normalized_file:match("viteck/configs/(.+)%.txt$")
+                local name = normalized_file:match("viteck/configs/(.+)%.lua$")
                 if name then
                     table.insert(config_list, name)
                 end
@@ -48,7 +49,7 @@ function config_manager:build_configs(library, section)
             local config_name = library.flags["ConfigName"]
             if config_name and config_name ~= "" then
                 local config = library:GetConfig()
-                writefile("viteck/configs/" .. config_name .. ".txt", config)
+                writefile("viteck/configs/" .. config_name .. ".lua", config)
                 config_dropdown:Refresh(get_config_list())
                 library:notification({message = "Config '" .. config_name .. "' saved", duration = 3, color = library.accent})
             else
@@ -62,15 +63,15 @@ function config_manager:build_configs(library, section)
         Callback = function()
             local config_name = library.flags["SelectedConfig"]
             if config_name then
-                if isfile("viteck/configs/" .. config_name .. ".txt") then
-                    local config = readfile("viteck/configs/" .. config_name .. ".txt")
+                if isfile("viteck/configs/" .. config_name .. ".lua") then
+                    local config = readfile("viteck/configs/" .. config_name .. ".lua")
                     library:LoadConfig(config)
                     library:notification({message = "Config '" .. config_name .. "' loaded", duration = 3, color = library.accent})
                 else
                     library:notification({message = "Config '" .. config_name .. "' not found", duration = 3, color = library.accent})
                 end
             else
-                library:notification({message = "Please select config",duration = 3, color = library.accent})
+                library:notification({message = "Please select config", duration = 3, color = library.accent})
             end
         end
     })
@@ -80,8 +81,8 @@ function config_manager:build_configs(library, section)
         Callback = function()
             local config_name = library.flags["SelectedConfig"]
             if config_name then
-                if isfile("viteck/configs/" .. config_name .. ".txt") then
-                    delfile("viteck/configs/" .. config_name .. ".txt")
+                if isfile("viteck/configs/" .. config_name .. ".lua") then
+                    delfile("viteck/configs/" .. config_name .. ".lua")
                     config_dropdown:Refresh(get_config_list())
                     library.flags["SelectedConfig"] = nil
                     library:notification({message = "Config '" .. config_name .. "' deleted", duration = 3, color = library.accent})
@@ -99,15 +100,15 @@ function config_manager:build_configs(library, section)
         Callback = function()
             local config_name = library.flags["SelectedConfig"]
             if config_name then
-                if isfile("viteck/configs/" .. config_name .. ".txt") then
-                    local config = readfile("viteck/configs/" .. config_name .. ".txt")
+                if isfile("viteck/configs/" .. config_name .. ".lua") then
+                    local config = readfile("viteck/configs/" .. config_name .. ".lua")
                     writefile("viteck/configs/autoload.txt", config)
                     library:notification({message = "Config '" .. config_name .. "' set as autoload", duration = 3, color = library.accent})
                 else
-                    library:notification({message = "Config '" .. config_name .. "' not found", duration = 3, color = library.accent})
+                    library:notification({message = "Config '" .. config_name .. "' must be saved first", duration = 3, color = Color3.fromRGB(255, 0, 0)})
                 end
             else
-                library:notification({message = "Please select a config",duration = 3, color = library.accent})
+                library:notification({message = "Please select a config", duration = 3, color = library.accent})
             end
         end
     })
@@ -116,8 +117,8 @@ function config_manager:build_configs(library, section)
         local config = readfile("viteck/configs/autoload.txt")
         library:LoadConfig(config)
         library:notification({message = "Autoload config applied", duration = 3, color = library.accent})
-    elseif isfile("viteck/configs/default.txt") then
-        local config = readfile("viteck/configs/default.txt")
+    elseif isfile("viteck/configs/default.lua") then
+        local config = readfile("viteck/configs/default.lua")
         library:LoadConfig(config)
         library:notification({message = "Default config applied", duration = 3, color = library.accent})
     end
