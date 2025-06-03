@@ -26,8 +26,13 @@ local function get_config(library)
                 local Values = Value.current
                 Final = ("key(%s,%s,%s)"):format(Values[1] or "nil", Values[2] or "nil", Value.Mode)
             elseif typeof(Value2) == "EnumItem" then
-                Final = ("enum(%s,%s)"):format(Value2.EnumType.Name, Value2.Name)
-                print("Debug - EnumItem:", Index, Value2, "->", Final)
+                if Value2 and Value2.EnumType and Value2.Name then
+                    Final = ("enum(%s,%s)"):format(tostring(Value2.EnumType), tostring(Value2.Name))
+                    print("Debug - EnumItem:", Index, Value2, "->", Final)
+                else
+                    Final = "enum(invalid)"
+                    print("Debug - Invalid EnumItem:", Index, Value2)
+                end
             elseif Value2 ~= nil then
                 if typeof(Value2) == "boolean" then
                     Value2 = ("bool(%s)"):format(tostring(Value2))
