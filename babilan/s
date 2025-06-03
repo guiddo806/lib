@@ -25,6 +25,8 @@ local function get_config(library)
             elseif typeof(Value2) == "table" and Value2.Mode then
                 local Values = Value.current
                 Final = ("key(%s,%s,%s)"):format(Values[1] or "nil", Values[2] or "nil", Value.Mode)
+            elseif typeof(Value2) == "EnumItem" then
+                Final = ("enum(%s)"):format(Value2.Name)
             elseif Value2 ~= nil then
                 if typeof(Value2) == "boolean" then
                     Value2 = ("bool(%s)"):format(tostring(Value2))
@@ -68,6 +70,18 @@ local function load_config(library, Config)
                     Table4[2] = nil
                 end
                 Value = Table4
+            elseif Value:sub(1, 4) == "enum" then
+                local enumName = Value:sub(6, #Value - 1)
+                local enumType = nil
+                if library.flags[Table3[1]] and typeof(library.flags[Table3[1]]) == "EnumItem" then
+                    local enumTypeName = library.flags[Table3[1]].EnumType.Name
+                    enumType = Enum[enumTypeName]
+                    if enumType then
+                        Value = enumType[enumName] or enumName
+                    end
+                else
+                    Value = enumName
+                end
             elseif Value:sub(1, 4) == "bool" then
                 local Bool = Value:sub(6, #Value - 1)
                 Value = Bool == "true"
