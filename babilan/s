@@ -1,5 +1,7 @@
+-- config_manager.lua
 local config_manager = {}
 
+-- Внутренние методы для работы с конфигурациями
 local function ensure_config_folder()
     if not isfolder("viteck") then
         makefolder("viteck")
@@ -26,7 +28,8 @@ local function get_config(library)
                 local Values = Value.current
                 Final = ("key(%s,%s,%s)"):format(Values[1] or "nil", Values[2] or "nil", Value.Mode)
             elseif typeof(Value2) == "EnumItem" then
-                Final = ("enum(%s)"):format(Value2.Name)
+                Final = ("enum(%s,%s)"):format(Value2.EnumType.Name, Value2.Name) -- Полный формат: enum(Type,Name)
+                print("Debug - EnumItem:", Index, Value2, "->", Final) -- Отладка
             elseif Value2 ~= nil then
                 if typeof(Value2) == "boolean" then
                     Value2 = ("bool(%s)"):format(tostring(Value2))
@@ -46,7 +49,6 @@ local function get_config(library)
                 end
                 Final = Value2
             end
-            --
             Config = Config .. Index .. ": " .. tostring(Final) .. "\n"
         end
     end
@@ -71,17 +73,18 @@ local function load_config(library, Config)
                 end
                 Value = Table4
             elseif Value:sub(1, 4) == "enum" then
-                local enumName = Value:sub(6, #Value - 1)
-                local enumType = nil
-                if library.flags[Table3[1]] and typeof(library.flags[Table3[1]]) == "EnumItem" then
-                    local enumTypeName = library.flags[Table3[1]].EnumType.Name
-                    enumType = Enum[enumTypeName]
+                local Table4 = string.split(Value:sub(6, #Value - 1), ",")
+                if #Table4 == 2 then
+                    local enumTypeName = Table4[1]
+                    local enumName = Table4[2]
+                    local enumType = Enum[enumTypeName]
                     if enumType then
-                        Value = enumType[enumName] or enumName
+                        Value = enumType[enumName] or enumName -- Восстанавливаем EnumItem
+                    else
+                        Value = enumName -- Если тип не найден, оставляем как строку
                     end
-                else
-                    Value = enumName
                 end
+                print("Debug - Enum Load:", Table3[1], Value) -- Отладка
             elseif Value:sub(1, 4) == "bool" then
                 local Bool = Value:sub(6, #Value - 1)
                 Value = Bool == "true"
@@ -171,9 +174,12 @@ local function apply_autoload(library)
     end
 end
 
+-- Публичный метод для создания интерфейса конфигураций
 function config_manager:build_configs(library, section)
+    -- Создаём папку для конфигураций
     ensure_config_folder()
 
+    -- Текстовое поле для имени новой конфигурации
     local config_name = section:Textbox({
         Name = "Config Name",
         Placeholder = "Enter config name",
@@ -183,6 +189,7 @@ function config_manager:build_configs(library, section)
         Flag = "ConfigName"
     })
 
+    -- Выпадающий список для выбора конфигурации
     local config_dropdown = section:dropdown({
         Name = "Select Config",
         Options = get_config_list(),
@@ -192,6 +199,7 @@ function config_manager:build_configs(library, section)
         Flag = "SelectedConfig"
     })
 
+    -- Кнопка для обновления списка конфигураций
     section:button({
         Name = "Refresh Config List",
         Callback = function()
@@ -200,6 +208,7 @@ function config_manager:build_configs(library, section)
         end
     })
 
+    -- Кнопка для сохранения новой конфигурации
     section:button({
         Name = "Save Config",
         Callback = function()
@@ -213,6 +222,7 @@ function config_manager:build_configs(library, section)
         end
     })
 
+    -- Кнопка для загрузки конфигурации
     section:button({
         Name = "Load Config",
         Callback = function()
@@ -229,6 +239,7 @@ function config_manager:build_configs(library, section)
         end
     })
 
+    -- Кнопка для удаления конфигурации
     section:button({
         Name = "Delete Config",
         Callback = function()
@@ -247,6 +258,7 @@ function config_manager:build_configs(library, section)
         end
     })
 
+    -- Кнопка для установки конфигурации как автозагружаемой
     section:button({
         Name = "Set as Autoload",
         Callback = function()
@@ -263,6 +275,7 @@ function config_manager:build_configs(library, section)
         end
     })
 
+    -- Применяем автозагрузку
     apply_autoload(library)
 end
 
