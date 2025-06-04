@@ -4,10 +4,12 @@ local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
+-- Ensure the config folder exists
 if not isfolder("viteck/configs/") then
     makefolder("viteck/configs/")
 end
 
+-- Function to serialize table to Lua string
 local function serialize_table(tbl, indent)
     indent = indent or 0
     local str = "{\n"
@@ -29,11 +31,14 @@ local function serialize_table(tbl, indent)
     return str .. string.rep("    ", indent) .. "}"
 end
 
+-- Function to save configuration
 function config_manager:save_config(library, config_name)
     local config = {}
     
+    -- Iterate through all flags in the library
     for flag, value in pairs(library.flags) do
         if type(value) == "table" then
+            -- Handle Colorpicker (RGBA)
             if value.r and value.g and value.b and value.transparency then
                 config[flag] = {
                     type = "color",
@@ -42,6 +47,7 @@ function config_manager:save_config(library, config_name)
                     b = value.b,
                     transparency = value.transparency
                 }
+            -- Handle Keybind
             elseif #value == 3 and value[1] and value[2] and type(value[3]) == "boolean" then
                 config[flag] = {
                     type = "keybind",
@@ -49,6 +55,7 @@ function config_manager:save_config(library, config_name)
                     mode = value[2],
                     toggled = value[3]
                 }
+            -- Handle Multi Dropdown
             elseif type(value) == "table" and #value > 0 then
                 config[flag] = {
                     type = "dropdown",
@@ -56,22 +63,26 @@ function config_manager:save_config(library, config_name)
                     value = value
                 }
             end
+        -- Handle Single Dropdown
         elseif type(value) == "string" then
             config[flag] = {
                 type = "dropdown",
                 multi = false,
                 value = value
             }
+        -- Handle Toggle
         elseif type(value) == "boolean" then
             config[flag] = {
                 type = "toggle",
                 value = value
             }
+        -- Handle Slider or Textbox
         elseif type(value) == "number" or type(value) == "string" then
             config[flag] = {
                 type = type(value) == "number" and "slider" or "textbox",
                 value = value
             }
+        -- Handle Label (if flagged)
         elseif type(value) == "string" then
             config[flag] = {
                 type = "label",
@@ -80,6 +91,7 @@ function config_manager:save_config(library, config_name)
         end
     end
     
+    -- Write configuration to file in Lua format
     local success, error = pcall(function()
         local lua_content = "return " .. serialize_table(config)
         writefile("viteck/configs/" .. config_name .. ".lua", lua_content)
@@ -92,6 +104,7 @@ function config_manager:save_config(library, config_name)
             color = library.accent
         })
     else
+        warn("Failed to save configuration:", error)
         library:notification({
             message = "Failed to save configuration: " .. tostring(error),
             duration = 5,
@@ -100,6 +113,7 @@ function config_manager:save_config(library, config_name)
     end
 end
 
+-- Function to load configuration
 function config_manager:load_config(library, config_name)
     if isfile("viteck/configs/" .. config_name .. ".lua") then
         local success, config = pcall(function()
@@ -162,6 +176,7 @@ function config_manager:load_config(library, config_name)
                 color = library.accent
             })
         else
+            warn("Failed to load configuration:", config)
             library:notification({
                 message = "Failed to load configuration: " .. tostring(config),
                 duration = 5,
@@ -177,6 +192,7 @@ function config_manager:load_config(library, config_name)
     end
 end
 
+-- Function to delete configuration
 function config_manager:delete_config(library, config_name)
     if isfile("viteck/configs/" .. config_name .. ".lua") then
         local success, error = pcall(function()
@@ -190,6 +206,7 @@ function config_manager:delete_config(library, config_name)
                 color = library.accent
             })
         else
+            warn("Failed to delete configuration:", error)
             library:notification({
                 message = "Failed to delete configuration: " .. tostring(error),
                 duration = 5,
@@ -205,6 +222,7 @@ function config_manager:delete_config(library, config_name)
     end
 end
 
+-- Function to get list of configurations
 function config_manager:get_configs()
     local configs = {}
     if isfolder("viteck/configs/") then
@@ -215,32 +233,55 @@ function config_manager:get_configs()
             end
         end
     end
+    -- Debug: Print the list of configs
+    print("Configs found:", table.concat(configs, ", "))
     return configs
 end
 
+-- Function to build the configuration UI
 function config_manager:build_configs(library, section)
     -- Config name input
     local config_name = section:Textbox({
-        Name = "Config Name",
+        Name = "Configzz Name",
         Placeholder = "Enter config name",
         State = "",
         Flag = "config_name"
     })
 
-    local config_list = section:dropdown({
+    -- Config list dropdown
+    local config_list
+    config_list = section:dropdown({
         Name = "Config List",
         Options = self:get_configs(),
         Flag = "config_list",
         Default = nil
     })
 
+    -- Save button
     section:button({
         Name = "Save Config",
         Callback = function()
             local name = library.flags["config_name"]
             if name and name ~= "" then
                 self:save_config(library, name)
-                config_list:Refresh(self:get_configs())
+                -- Small delay to ensure file is written
+                wait(0.1)
+                local new_configs = self:get_configs()
+                -- Try refreshing the dropdown
+                if config_list.Refresh then
+                    config_list:Refresh(new_configs)
+                    print("Dropdown refreshed with:", table.concat(new_configs, ", "))
+                else
+                    -- Fallback: Recreate dropdown if Refresh doesn't work
+                    config_list:Destroy() -- Assuming Destroy method exists
+                    config_list = section:dropdown({
+                        Name = "Config List",
+                        Options = new_configs,
+                        Flag = "config_list",
+                        Default = nil
+                    })
+                    print("Dropdown recreated with:", table.concat(new_configs, ", "))
+                end
             else
                 library:notification({
                     message = "Please enter a valid config name!",
@@ -251,6 +292,7 @@ function config_manager:build_configs(library, section)
         end
     })
 
+    -- Load button
     section:button({
         Name = "Load Config",
         Callback = function()
@@ -267,13 +309,31 @@ function config_manager:build_configs(library, section)
         end
     })
 
+    -- Delete button
     section:button({
         Name = "Delete Config",
         Callback = function()
             local name = library.flags["config_list"]
             if name then
                 self:delete_config(library, name)
-                config_list:Refresh(self:get_configs())
+                -- Small delay to ensure file is deleted
+                wait(0.1)
+                local new_configs = self:get_configs()
+                -- Try refreshing the dropdown
+                if config_list.Refresh then
+                    config_list:Refresh(new_configs)
+                    print("Dropdown refreshed with:", table.concat(new_configs, ", "))
+                else
+                    -- Fallback: Recreate dropdown
+                    config_list:Destroy()
+                    config_list = section:dropdown({
+                        Name = "Config List",
+                        Options = new_configs,
+                        Flag = "config_list",
+                        Default = nil
+                    })
+                    print("Dropdown recreated with:", table.concat(new_configs, ", "))
+                end
             else
                 library:notification({
                     message = "Please select a config to delete!",
@@ -284,7 +344,11 @@ function config_manager:build_configs(library, section)
         end
     })
 
-    config_list:Refresh(self:get_configs())
+    -- Initial refresh for safety
+    wait(0.1)
+    if config_list.Refresh then
+        config_list:Refresh(self:get_configs())
+    end
 end
 
 return config_manager
