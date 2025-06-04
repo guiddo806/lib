@@ -1,273 +1,195 @@
 local config_manager = {}
 
-local function ensure_config_folder()
-    if not isfolder("viteck") then
-        makefolder("viteck")
-    end
-    if not isfolder("viteck/configs") then
-        makefolder("viteck/configs")
-    end
-end
-
-local function get_config(library)
-    local Config = ""
-    for Index, Value in pairs(library.flags) do
-        if Index ~= "ConfigConfig_List" and Index ~= "ConfigConfig_Load" and 
-           Index ~= "ConfigConfig_Save" then
-            local Value2 = Value
-            local Final = ""
-            --
-            if typeof(Value2) == "Color3" then
-                local hue, sat, val = Value2:ToHSV()
-                Final = ("rgb(%s,%s,%s,%s)"):format(hue, sat, val, 1)
-            elseif typeof(Value2) == "table" and Value2.Color and Value2.Transparency then
-                local hue, sat, val = Value2.Color:ToHSV()
-                Final = ("rgb(%s,%s,%s,%s)"):format(hue, sat, val, Value2.Transparency)
-            elseif typeof(Value2) == "table" and Value2.Mode then
-                local Values = Value.current
-                Final = ("key(%s,%s,%s)"):format(Values[1] or "nil", Values[2] or "nil", Value.Mode)
-            elseif typeof(Value2) == "EnumItem" then
-                if Value2 and Value2.EnumType and Value2.Name then
-                    Final = ("enum(%s,%s)"):format(tostring(Value2.EnumType), tostring(Value2.Name))
-                else
-                    Final = "enum(invalid)"
-                end
-            elseif Value2 ~= nil then
-                if typeof(Value2) == "boolean" then
-                    Value2 = ("bool(%s)"):format(tostring(Value2))
-                elseif typeof(Value2) == "table" then
-                    local New = "table("
-                    for _, Value3 in pairs(Value2) do
-                        New = New .. Value3 .. ","
-                    end
-                    if New:sub(#New) == "," then
-                        New = New:sub(0, #New - 1)
-                    end
-                    Value2 = New .. ")"
-                elseif typeof(Value2) == "string" then
-                    Value2 = ("string(%s)"):format(Value2)
-                elseif typeof(Value2) == "number" then
-                    Value2 = ("number(%s)"):format(Value2)
-                end
-                Final = Value2
-            end
-            Config = Config .. Index .. ": " .. tostring(Final) .. "\n"
-        end
-    end
-    return Config
-end
-
-local function load_config(library, Config)
-    local Table = string.split(Config, "\n")
-    local Table2 = {}
-    for _, Value in pairs(Table) do
-        local Table3 = string.split(Value, ":")
-        if Table3[1] ~= "ConfigConfig_List" and #Table3 >= 2 then
-            local Value = Table3[2]:sub(2, #Table3[2])
-            if Value:sub(1, 3) == "rgb" then
-                local Table4 = string.split(Value:sub(5, #Value - 1), ",")
-                Value = Table4
-            elseif Value:sub(1, 3) == "key" then
-                local Table4 = string.split(Value:sub(5, #Value - 1), ",")
-                if Table4[1] == "nil" and Table4[2] == "nil" then
-                    Table4[1] = nil
-                    Table4[2] = nil
-                end
-                Value = Table4
-            elseif Value:sub(1, 4) == "enum" then
-                local Table4 = string.split(Value:sub(6, #Value - 1), ",")
-                if #Table4 == 2 then
-                    local enumTypeName = Table4[1]
-                    local enumName = Table4[2]
-                    local enumType = Enum[enumTypeName]
-                    if enumType then
-                        Value = enumType[enumName] or tostring(enumName)
-                    else
-                        Value = tostring(enumName)
-                    end
-                end
-            elseif Value:sub(1, 4) == "bool" then
-                local Bool = Value:sub(6, #Value - 1)
-                Value = Bool == "true"
-            elseif Value:sub(1, 5) == "table" then
-                local Table4 = string.split(Value:sub(7, #Value - 1), ",")
-                Value = Table4
-            elseif Value:sub(1, 6) == "string" then
-                local String = Value:sub(8, #Value - 1)
-                Value = String
-            elseif Value:sub(1, 6) == "number" then
-                local Number = tonumber(Value:sub(8, #Value - 1))
-                Value = Number
-            end
-            Table2[Table3[1]] = Value
-        end
-    end
-    for i, v in pairs(Table2) do
-        if library.flags[i] then
-            if typeof(library.flags[i]) == "table" then
-                library.flags[i]:Set(tostring(v))
-            else
-                library.flags[i](tostring(v))
-            end
-        end
-    end
-end
-
-local function get_config_list()
+function config_manager:build_configs(library, configs_section)
     local config_list = {}
-    if isfolder("viteck/configs") then
-        local files = listfiles("viteck/configs")
-        for _, file in pairs(files) do
-            local normalized_file = file:gsub("\\", "/")
-            local name = normalized_file:match("viteck/configs/(.+)%.lua$")
-            if name then
-                table.insert(config_list, name)
+    local selected_config = nil
+    local autoload_file = "viteck/autoload.txt"
+
+    local function update_config_list()
+        config_list = {}
+        if isfolder("viteck/configs/") then
+            for _, file in pairs(listfiles("viteck/configs/")) do
+                if file:match("%.lua$") then
+                    table.insert(config_list, file:match("viteck/configs/(.+)%.lua$"))
+                end
             end
         end
+        return config_list
     end
-    return config_list
-end
 
-local function save_config(library, config_name)
-    if config_name and config_name ~= "" then
-        local config = get_config(library)
-        writefile("viteck/configs/" .. config_name .. ".lua", config)
-        return true
-    end
-    return false
-end
+    update_config_list()
 
-local function load_config_file(library, config_name)
-    if config_name and isfile("viteck/configs/" .. config_name .. ".lua") then
-        local config = readfile("viteck/configs/" .. config_name .. ".lua")
-        load_config(library, config)
-        return true
-    end
-    return false
-end
-
-local function delete_config(config_name)
-    if config_name and isfile("viteck/configs/" .. config_name .. ".lua") then
-        delfile("viteck/configs/" .. config_name .. ".lua")
-        return true
-    end
-    return false
-end
-
-local function set_autoload(library, config_name)
-    if config_name and isfile("viteck/configs/" .. config_name .. ".lua") then
-        local config = readfile("viteck/configs/" .. config_name .. ".lua")
-        writefile("viteck/configs/autoload.txt", config)
-        return true
-    end
-    return false
-end
-
-local function apply_autoload(library)
-    if isfile("viteck/configs/autoload.txt") then
-        local config = readfile("viteck/configs/autoload.txt")
-        load_config(library, config)
-        library:notification({message = "Autoload config applied", duration = 3, color = library.accent})
-    elseif isfile("viteck/configs/default.lua") then
-        local config = readfile("viteck/configs/default.lua")
-        load_config(library, config)
-        library:notification({message = "Default config applied", duration = 3, color = library.accent})
-    end
-end
-
-function config_manager:build_configs(library, section)
-    ensure_config_folder()
-
-    local config_name = section:Textbox({
+    local config_name_textbox = configs_section:Textbox({
         Name = "Config Name",
         Placeholder = "Enter config name",
+        State = "",
+        Flag = "config_name",
         Callback = function(value)
-            library.flags["ConfigName"] = tostring(value or "")
-        end,
-        Flag = "ConfigName"
-    })
-
-    local config_dropdown = section:dropdown({
-        Name = "Select Config",
-        Options = get_config_list(),
-        Callback = function(value)
-            library.flags["SelectedConfig"] = tostring(value or "")
-        end,
-        Flag = "SelectedConfig"
-    })
-
-    section:button({
-        Name = "Refresh Config List",
-        Callback = function()
-            config_dropdown:Refresh(get_config_list())
-            library:notification({message = "Config list refreshed", duration = 3, color = library.accent})
+            selected_config = value
         end
     })
 
-    section:button({
+    local config_dropdown = configs_section:dropdown({
+        Name = "Select Config",
+        Options = config_list,
+        Flag = "selected_config",
+        Callback = function(value)
+            selected_config = value
+        end
+    })
+
+    configs_section:button({
         Name = "Save Config",
         Callback = function()
-            local name = tostring(library.flags["ConfigName"] or "")
-            if save_config(library, name) then
-                config_dropdown:Refresh(get_config_list())
-                library:notification({message = "Config '" .. name .. "' saved", duration = 3, color = library.accent})
+            if selected_config and selected_config ~= "" then
+                local config_path = "viteck/configs/" .. selected_config .. ".lua"
+                local config_data = {}
+                for flag, value in pairs(library.flags) do
+                    config_data[flag] = value
+                end
+                writefile(config_path, game:GetService("HttpService"):JSONEncode(config_data))
+                library:notification({
+                    message = "Config '" .. selected_config .. "' saved successfully",
+                    duration = 3,
+                    color = library.accent
+                })
+                config_dropdown:Refresh(update_config_list())
             else
-                library:notification({message = "Please enter config name", duration = 3, color = library.accent})
+                library:notification({
+                    message = "Please enter a valid config name",
+                    duration = 3,
+                    color = Color3.fromRGB(255, 0, 0)
+                })
             end
         end
     })
 
-    section:button({
+    configs_section:button({
         Name = "Load Config",
         Callback = function()
-            local name = tostring(library.flags["SelectedConfig"] or "")
-            if name and name ~= "" then
-                if load_config_file(library, name) then
-                    library:notification({message = "Config '" .. name .. "' loaded", duration = 3, color = library.accent})
-                else
-                    library:notification({message = "Config '" .. name .. "' not found", duration = 3, color = library.accent})
+            if selected_config and isfile("viteck/configs/" .. selected_config .. ".lua") then
+                local config_data = game:GetService("HttpService"):JSONDecode(readfile("viteck/configs/" .. selected_config .. ".lua"))
+                for flag, value in pairs(config_data) do
+                    if library.flags[flag] ~= nil then
+                        if type(value) == "table" and value[1] and value[2] then 
+                            library.flags[flag] = value
+                            flags[flag](value[1]) 
+                            if flags[flag].SetMode then
+                                flags[flag]:SetMode(value[2])
+                            end
+                        elseif type(value) == "table" and value.r then
+                            library.flags[flag] = value
+                            flags[flag](Color3.new(value.r, value.g, value.b), value.transparency or 1)
+                        else
+                            library.flags[flag] = value
+                            if flags[flag] then
+                                flags[flag](value)
+                            end
+                        end
+                    end
                 end
+                library:notification({
+                    message = "Config '" .. selected_config .. "' loaded successfully",
+                    duration = 3,
+                    color = library.accent
+                })
             else
-                library:notification({message = "Please select config", duration = 3, color = library.accent})
+                library:notification({
+                    message = "Please select a valid config",
+                    duration = 3,
+                    color = Color3.fromRGB(255, 0, 0)
+                })
             end
         end
     })
 
-    section:button({
+    configs_section:button({
         Name = "Delete Config",
         Callback = function()
-            local name = tostring(library.flags["SelectedConfig"] or "")
-            if name and name ~= "" then
-                if delete_config(name) then
-                    config_dropdown:Refresh(get_config_list())
-                    library.flags["SelectedConfig"] = nil
-                    library:notification({message = "Config '" .. name .. "' deleted", duration = 3, color = library.accent})
-                else
-                    library:notification({message = "Config '" .. name .. "' not found", duration = 3, color = library.accent})
+            if selected_config and isfile("viteck/configs/" .. selected_config .. ".lua") then
+                delfile("viteck/configs/" .. selected_config .. ".lua")
+                if isfile(autoload_file) and readfile(autoload_file) == selected_config then
+                    delfile(autoload_file)
                 end
+                library:notification({
+                    message = "Config '" .. selected_config .. "' deleted successfully",
+                    duration = 3,
+                    color = library.accent
+                })
+                config_dropdown:Refresh(update_config_list())
             else
-                library:notification({message = "Please select config", duration = 3, color = library.accent})
+                library:notification({
+                    message = "Please select a valid config",
+                    duration = 3,
+                    color = Color3.fromRGB(255, 0, 0)
+                })
             end
         end
     })
 
-    section:button({
+    configs_section:button({
+        Name = "Refresh Config List",
+        Callback = function()
+            config_dropdown:Refresh(update_config_list())
+            library:notification({
+                message = "Config list refreshed",
+                duration = 3,
+                color = library.accent
+            })
+        end
+    })
+
+    configs_section:button({
         Name = "Set as Autoload",
         Callback = function()
-            local name = tostring(library.flags["SelectedConfig"] or "")
-            if name and name ~= "" then
-                if set_autoload(library, name) then
-                    library:notification({message = "Config '" .. name .. "' set as autoload", duration = 3, color = library.accent})
-                else
-                    library:notification({message = "Config '" .. name .. "' must be saved first", duration = 3, color = Color3.fromRGB(255, 0, 0)})
-                end
+            if selected_config and isfile("viteck/configs/" .. selected_config .. ".lua") then
+                writefile(autoload_file, selected_config)
+                library:notification({
+                    message = "Config '" .. selected_config .. "' set as autoload",
+                    duration = 3,
+                    color = library.accent
+                })
             else
-                library:notification({message = "Please select a config", duration = 3, color = library.accent})
+                library:notification({
+                    message = "Please select a valid config",
+                    duration = 3,
+                    color = Color3.fromRGB(255, 0, 0)
+                })
             end
         end
     })
 
-    apply_autoload(library)
+    if isfile(autoload_file) then
+        local autoload_config = readfile(autoload_file)
+        if isfile("viteck/configs/" .. autoload_config .. ".lua") then
+            selected_config = autoload_config
+            local config_data = game:GetService("HttpService"):JSONDecode(readfile("viteck/configs/" .. autoload_config .. ".lua"))
+            for flag, value in pairs(config_data) do
+                if library.flags[flag] ~= nil then
+                    if type(value) == "table" and value[1] and value[2] then
+                        library.flags[flag] = value
+                        flags[flag](value[1])
+                        if flags[flag].SetMode then
+                            flags[flag]:SetMode(value[2])
+                        end
+                    elseif type(value) == "table" and value.r then
+                        library.flags[flag] = value
+                        flags[flag](Color3.new(value.r, value.g, value.b), value.transparency or 1)
+                    else
+                        library.flags[flag] = value
+                        if flags[flag] then
+                            flags[flag](value)
+                        end
+                    end
+                end
+            end
+            library:notification({
+                message = "Autoloaded config '" .. autoload_config .. "'",
+                duration = 3,
+                color = library.accent
+            })
+        end
+    end
 end
 
 return config_manager
